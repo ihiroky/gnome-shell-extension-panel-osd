@@ -1,4 +1,4 @@
-%global git 2701627
+%global git c65d495
 %global uuid top-notification-extension@jenslody.de
 %global github jenslody-gnome-shell-extension-top-notification
 %global checkout git%{git}
@@ -14,7 +14,7 @@ URL:            https://github.com/jenslody/gnome-shell-extension-top-notificati
 Source0:        https://github.com/jenslody/gnome-shell-extension-top-notification/tarball/master/%{github}-%{git}.tar.gz
 BuildArch:      noarch
 
-BuildRequires:  autoconf >= 2.53, automake >= 1.9, glib2-devel, gnome-common >= 3.8.0
+BuildRequires:  autoconf >= 2.53, automake >= 1.9, gnome-common >= 3.7.0
 Requires:       gnome-shell >= 3.8.0
 
 %description
@@ -31,19 +31,9 @@ make %{?_smp_mflags}
 
 %install
 make install DESTDIR=%{buildroot}
-%find_lang %{name}
 
-%postun
-if [ $1 -eq 0 ] ; then
-        %{_bindir}/glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
-fi
-
-%posttrans
-%{_bindir}/glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
-
-%files -f %{name}.lang
+%files
 %doc AUTHORS COPYING README.md
-%{_datadir}/glib-2.0/schemas/org.gnome.shell.extensions.top-notification.gschema.xml
 %{_datadir}/gnome-shell/extensions/%{uuid}/
 
 %changelog
