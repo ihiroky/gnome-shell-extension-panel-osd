@@ -1,0 +1,8 @@
+{
+"uuid": "@uuid@",
+"name": "Top Notification",
+"description": "Place shell notifications under the panel instead of above the message-tray",
+"shell-version": [ "3.8" ],
+"localedir": "@LOCALEDIR@",
+"url": "@url@"
+}
