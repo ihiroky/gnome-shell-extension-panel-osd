@@ -16,8 +16,6 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Config = imports.misc.config;
 const Main = imports.ui.main;
 const Tweener = imports.ui.tweener;
-const MessageTray = imports.ui.messageTray;
-const Panel = imports.ui.panel;
 const LayoutManager = Main.layoutManager;
 const Lang = imports.lang;
 
@@ -57,7 +55,7 @@ const State = {
     HIDING:  3
 };
 
-function init() {	
+function init() {
 }
 
 
@@ -67,58 +65,46 @@ function init() {
  *  We only change the .y and .x values to move the OSD.  We need to copy
  *  the whole method to prevent the animation from moving the OSD across the
  *  entire screen.
- *
- *  I stripped the original comments out so that my changes (and comments) could
- *  be highlighted.  It's really just a tiny change.
  */
 let extensionShowNotification = function () {
     this._notification = this._notificationQueue.shift();
 
     this._userActiveWhileNotificationShown = this.idleMonitor.get_idletime() <= IDLE_TIME;
     if (!this._userActiveWhileNotificationShown) {
-        this.idleMonitor.add_user_active_watch(Lang.bind(this,
-                                               this._onIdleMonitorBecameActive));
-        }
-
-    this._notificationClickedId = this._notification.connect(
-                                      'done-displaying',
-                                      Lang.bind(this, this._escapeTray)
-                                      );
-    this._notificationUnfocusedId = this._notification.connect(
-                                      'unfocused',
-                                      Lang.bind(
-                                          this,
-                                          function() { this._updateState(); }
-                                          )
-                                      );
-    this._notificationBin.child = this._notification.actor;
-    this._notificationWidget.opacity = 0;
-
-    if (!ExtensionUtils.versionCheck(['3.9', '3.10'], Config.PACKAGE_VERSION)) {
-        /*
-         *  for .y we use the panel's height, to move it just below the panel.
-         *  we calculate .height every time, to prevent using gnome-shell's startup
-         *  panel height before the themes are loaded.
-         *
-         *  If you set this to .0, the OSD is animated (Tweened) in from outside
-         *  the screen, but the very first frame moves *all* windows down to make
-         *  space for the OSD.  Subsequent frames moves the windows back.
-         *
-         *  I don't know how to fix that.
-         */
-        this._notificationWidget.y = panel.height;
-        /*
-         *  for .x we Math.round() to prevent 1/2 pixels; which can cause blurry
-         *  font rendering
-         */
-            this._notificationWidget.x = Math.round((panel.width / 2) -
-                (this._notificationWidget.width) / 2);
+        // If the user isn't active, set up a watch to let us know
+        // when the user becomes active.
+        this.idleMonitor.add_user_active_watch(Lang.bind(this, this._onIdleMonitorBecameActive));
     }
+
+    this._notificationClickedId = this._notification.connect('done-displaying',
+                                                             Lang.bind(this, this._escapeTray));
+    this._notificationUnfocusedId = this._notification.connect('unfocused', Lang.bind(this, function() {
+        this._updateState();
+    }));
+    this._notificationBin.child = this._notification.actor;
+
+    this._notificationWidget.opacity = 0;
+// JRL changes begin
+//    this._notificationWidget.y = 0;
+    this._notificationWidget.y = -global.screen_height;
+// JRL changes end
+
+
     this._notificationWidget.show();
+
     this._updateShowingNotification();
+
     let [x, y, mods] = global.get_pointer();
+    // We save the position of the mouse at the time when we started showing the notification
+    // in order to determine if the notification popped up under it. We make that check if
+    // the user starts moving the mouse and _onTrayHoverChanged() gets called. We don't
+    // expand the notification if it just happened to pop up under the mouse unless the user
+    // explicitly mouses away from it and then mouses back in.
     this._showNotificationMouseX = x;
     this._showNotificationMouseY = y;
+    // We save the coordinates of the mouse at the time when we started showing the notification
+    // and then we update it in _notificationTimeout(). We don't pop down the notification if
+    // the mouse is moving towards it or within it.
     this._lastSeenMouseX = x;
     this._lastSeenMouseY = y;
 }
@@ -130,21 +116,27 @@ let extensionShowNotification = function () {
  *  We only change the .y and .x values to move the OSD.  We need to copy
  *  the whole method to prevent the animation from moving the OSD across the
  *  entire screen.
- *
- *  I stripped the original comments out so that my changes (and comments) could
- *  be highlighted.  It's really just a tiny change.
  */
 let extensionHideNotification = function(animate) {
-if (ExtensionUtils.versionCheck(['3.9', '3.10'], Config.PACKAGE_VERSION)) {
-    this._notificationFocusGrabber.ungrabFocus();
-}
-else
-{
-    this._notificationState = State.HIDING;
+    if (ExtensionUtils.versionCheck(['3.9', '3.10'], Config.PACKAGE_VERSION)) {
+        this._notificationFocusGrabber.ungrabFocus();
+    }
+    else
+    {
+        // HACK!
+        // There seems to be a reentrancy issue in calling .ungrab() here,
+        // which causes _updateState to be called before _notificationState
+        // becomes HIDING. That hides the notification again, nullifying the
+        // object but not setting _notificationState (and that's the weird part)
+        // As then _notificationState is stuck into SHOWN but _notification
+        // is null, every new _updateState fails and the message tray is
+        // lost forever.
+        //
+        // See more at https://bugzilla.gnome.org/show_bug.cgi?id=683986
+        this._notificationState = State.HIDING;
 
-    if (!this._notification) { return; }
-    this._grabHelper.ungrab({ actor: this._notification.actor });
-}
+        this._grabHelper.ungrab({ actor: this._notification.actor });
+    }
 
     if (this._notificationExpandedId) {
         this._notification.disconnect(this._notificationExpandedId);
@@ -158,8 +150,8 @@ else
         this._notification.disconnect(this._notificationUnfocusedId);
         this._notificationUnfocusedId = 0;
     }
+
     if (ExtensionUtils.versionCheck(['3.9', '3.10'], Config.PACKAGE_VERSION)) {
-        this._useLongerNotificationLeftTimeout = false;
         if (this._notificationLeftTimeoutId) {
             Mainloop.source_remove(this._notificationLeftTimeoutId);
             this._notificationLeftTimeoutId = 0;
@@ -168,17 +160,23 @@ else
         }
 
         if (animate) {
-            this._tween(this._notificationWidget, '_notificationState', State.HIDDEN, {
-                y: 0,
-                opacity: 0,
-                time: ANIMATION_TIME,
-                transition: 'easeOutQuad',
-                onComplete: this._hideNotificationCompleted,
-                onCompleteScope: this
-            });
+            this._tween(this._notificationWidget, '_notificationState', State.HIDDEN,
+// JRL changes begin
+//                        { y: this.actor.height,
+                        { y: -global.screen_height,
+// JRL changes end
+                          opacity: 0,
+                          time: ANIMATION_TIME,
+                          transition: 'easeOutQuad',
+                          onComplete: this._hideNotificationCompleted,
+                          onCompleteScope: this
+                        });
         } else {
             Tweener.removeTweens(this._notificationWidget);
-            this._notificationWidget.y = 0;
+// JRL changes begin
+//            this._notificationWidget.y = this.actor.height;
+            this._notificationWidget.y = -global.screen_height;
+// JRL changes end
             this._notificationWidget.opacity = 0;
             this._notificationState = State.HIDDEN;
             this._hideNotificationCompleted();
@@ -196,73 +194,89 @@ else
 
         if (this._notificationRemoved) {
             Tweener.removeTweens(this._notificationWidget);
-            this._notificationWidget.y = this.actor.height;
+// JRL changes begin
+//            this._notificationWidget.y = this.actor.height;
+            this._notificationWidget.y = -global.screen_height;
+// JRL changes end
             this._notificationWidget.opacity = 0;
             this._notificationState = State.HIDDEN;
             this._hideNotificationCompleted();
         } else {
-    //
-    //          We leave the widget.y at panel.height, and not .0; because the
-    //          showing animation is opacity-only.
-    //
-    //          Can be animated out to .0 if you want; there are no artifacts on
-    //          screen when animating out.
-    //
             this._tween(this._notificationWidget, '_notificationState', State.HIDDEN,
-                        { y: panel.height,
+// JRL changes begin
+//                        { y: this.actor.height,
+                        { y: -global.screen_height,
+// JRL changes end
                           opacity: 0,
                           time: ANIMATION_TIME,
                           transition: 'easeOutQuad',
                           onComplete: this._hideNotificationCompleted,
                           onCompleteScope: this
                         });
+
         }
     }
 }
 
 
 /*
- *  Copied from MessageTray._updateNotification()
  *  Copied from MessageTray._updateShowingNotification()
  *
  *  We only change the .y and .x values to move the OSD.  We need to copy
  *  the whole method to prevent the animation from moving the OSD across the
  *  entire screen.
  *
- *  I stripped the original comments out so that my changes (and comments) could
- *  be highlighted.  It's really just a tiny change.
  */
 let extensionUpdateShowingNotification = function() {
     this._notification.acknowledged = true;
     this._notification.playSound();
+
+    // We auto-expand notifications with CRITICAL urgency, or for which the relevant setting
+    // is on in the control center.
     if (this._notification.urgency == Urgency.CRITICAL ||
         this._notification.source.policy.forceExpanded)
         this._expandNotification(true);
-    this._notificationWidget.x = Math.round((panel.width / 2) -
-        (this._notificationWidget.width) / 2);
-    /*
-     *  As noted above, panel.height is constant to prevent an artifact,
-     *  so in effect only the opacity changes.
-     */
-    let tweenParams = {
-        opacity: 255,
-        //        opacity: 187,
-        y: panel.height,
-        time: ANIMATION_TIME,
-        transition: 'easeOutQuad',
-        onComplete: this._showNotificationCompleted,
-        onCompleteScope: this
-    };
+
+    // We tween all notifications to full opacity. This ensures that both new notifications and
+    // notifications that might have been in the process of hiding get full opacity.
+    //
+    // We tween any notification showing in the banner mode to the appropriate height
+    // (which is banner height or expanded height, depending on the notification state)
+    // This ensures that both new notifications and notifications in the banner mode that might
+    // have been in the process of hiding are shown with the correct height.
+    //
+    // We use this._showNotificationCompleted() onComplete callback to extend the time the updated
+    // notification is being shown.
+
+    let tweenParams = { opacity: 255,
+// JRL changes begin
+//                        y: -this._notificationWidget.height,
+                        y: panel.height - global.screen_height,
+// JRL changes end
+                        time: ANIMATION_TIME,
+                        transition: 'easeOutQuad',
+                        onComplete: this._showNotificationCompleted,
+                        onCompleteScope: this
+                      };
+
     this._tween(this._notificationWidget, '_notificationState', State.SHOWN, tweenParams);
 }
 
+/*
+ *  Copied from MessageTray._onNotificationExpanded()
+ *
+ *  We only change the .y and .x values to move the OSD.  We need to copy
+ *  the whole method to prevent the animation from moving the OSD across the
+ *  entire screen.
+ *
+ */
 let extensiononNotificationExpanded = function() {
-    let expandedY = panel.height;
-//    this._closeButton.y = expandedY;
+// JRL changes begin
+//    let expandedY = - this._notificationWidget.height;
+    let expandedY = panel.height - global.screen_height;
+// JRL changes end
     this._closeButton.show();
-    log('this._notificationWidget.y = ' + this._notificationWidget.y);
-    log('this._notificationWidget.height = ' + this._notificationWidget.height);
-    log('panel.height = ' + panel.height);
+
     // Don't animate the notification to its new position if it has shrunk:
     // there will be a very visible "gap" that breaks the illusion.
     if (this._notificationWidget.y < expandedY) {
@@ -270,47 +284,23 @@ let extensiononNotificationExpanded = function() {
     } else if (this._notification.y != expandedY) {
         // Tween also opacity here, to override a possible tween that's
         // currently hiding the notification.
-        this._tween(this._notificationWidget, '_notificationState', State.SHOWN, {
-            y: expandedY,
-            opacity: 255,
-            time: ANIMATION_TIME,
-            transition: 'easeOutQuad'
-        });
-        log('this._notificationWidget.y = ' + this._notificationWidget.y);
-        log('this._notificationWidget.height = ' + this._notificationWidget.height);
+        this._tween(this._notificationWidget, '_notificationState', State.SHOWN,
+                    { y: expandedY,
+                      opacity: 255,
+                      time: ANIMATION_TIME,
+                      transition: 'easeOutQuad'
+                    });
     }
-
 }
 
 /*
  *  Overload the methods.
- *  Untrack the widget.
- *  Re-parent the widget.
- *  Re-track the widget.
- *
- *  We untrack/retrack to get mouse click events to work correctly.  Focus
- *  tracking appears to work without re-tracking, but mouse clicks can be
- *  lost.
  */
 function enable() {
     Main.messageTray._showNotification = extensionShowNotification;
     Main.messageTray._hideNotification = extensionHideNotification;
     Main.messageTray._updateShowingNotification = extensionUpdateShowingNotification;
-    LayoutManager.untrackChrome(notificationWidget);
-    if (ExtensionUtils.versionCheck(['3.9', '3.10'], Config.PACKAGE_VERSION)) {
-        Main.messageTray._onNotificationExpanded = extensiononNotificationExpanded;
-        LayoutManager.trayBox.remove_actor(notificationWidget);
-        Main.uiGroup.add_actor(notificationWidget);
-        Main.uiGroup.set_child_below_sibling(notificationWidget,
-            panel);
-    }
-    else
-    {
-        Main.messageTray.actor.remove_actor(notificationWidget);
-        panel.add_actor(notificationWidget);
-        LayoutManager.trackChrome(notificationWidget);
-    }
-
+    Main.messageTray._onNotificationExpanded = extensiononNotificationExpanded;
 }
 
 
@@ -321,18 +311,5 @@ function disable() {
     Main.messageTray._showNotification = originalShowNotification;
     Main.messageTray._hideNotification = originalHideNotification;
     Main.messageTray._updateShowingNotification = originalUpdateShowingNotification;
-    if (ExtensionUtils.versionCheck(['3.9', '3.10'], Config.PACKAGE_VERSION)) {
-        Main.messageTray._onNotificationExpanded = originalExpandMethod;
-        notificationWidget.x = originalNotificationWidgetX;
-        Main.uiGroup.remove_actor(notificationWidget);
-        Main.layoutManager.trayBox.add_actor(notificationWidget);
-    }
-    else
-    {
-    LayoutManager.untrackChrome(notificationWidget);
-    panel.remove_actor(notificationWidget);
-    Main.messageTray.actor.add_actor(notificationWidget);
-    }
-
-    LayoutManager.trackChrome(notificationWidget);
+    Main.messageTray._onNotificationExpanded = originalExpandMethod;
 }
