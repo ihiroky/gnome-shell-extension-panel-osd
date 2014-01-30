@@ -1,4 +1,4 @@
-%global git c65d495
+%global git 2740ca9
 %global uuid top-notification-extension@jenslody.de
 %global github jenslody-gnome-shell-extension-top-notification
 %global checkout git%{git}
@@ -14,8 +14,8 @@ URL:            https://github.com/jenslody/gnome-shell-extension-top-notificati
 Source0:        https://github.com/jenslody/gnome-shell-extension-top-notification/tarball/master/%{github}-%{git}.tar.gz
 BuildArch:      noarch
 
-BuildRequires:  autoconf >= 2.53, automake >= 1.9, gnome-common >= 3.7.0
-Requires:       gnome-shell >= 3.8.0
+BuildRequires:  autoconf >= 2.53, automake >= 1.9, gnome-common >= 3.6.0
+Requires:       gnome-shell >= 3.6.0
 
 %description
 gnome-shell-extension-top-notification is an extension to show the notification
