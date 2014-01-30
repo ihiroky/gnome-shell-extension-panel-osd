@@ -228,6 +228,10 @@ let extensionHideNotification = function(animate) {
  *
  */
 let extensionUpdateShowingNotification = function() {
+// JRL changes begin
+    // add own class-name to change border-radius, otherwise the changed value remains after switching off the extension
+    this._notification._table.add_style_class_name('jrlnotification');
+// JRL changes end
     this._notification.acknowledged = true;
     this._notification.playSound();
 
@@ -308,6 +312,8 @@ function enable() {
  *  Put everything back.
  */
 function disable() {
+    // remove our style, in case we just show a notification, otherwise the radius is drawn incorrect
+    Main.messageTray._notification._table.remove_style_class_name('jrlnotification');
     Main.messageTray._showNotification = originalShowNotification;
     Main.messageTray._hideNotification = originalHideNotification;
     Main.messageTray._updateShowingNotification = originalUpdateShowingNotification;
