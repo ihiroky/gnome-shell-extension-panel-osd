@@ -70,10 +70,17 @@ let extensionShowNotification = function () {
     this._notification = this._notificationQueue.shift();
 
     this._userActiveWhileNotificationShown = this.idleMonitor.get_idletime() <= IDLE_TIME;
-    if (!this._userActiveWhileNotificationShown) {
-        // If the user isn't active, set up a watch to let us know
-        // when the user becomes active.
-        this.idleMonitor.add_user_active_watch(Lang.bind(this, this._onIdleMonitorBecameActive));
+    if (ExtensionUtils.versionCheck(['3.7', '3.8', '3.9', '3.10'], Config.PACKAGE_VERSION)) {
+        if (!this._userActiveWhileNotificationShown) {
+            // If the user isn't active, set up a watch to let us know
+            // when the user becomes active.
+            this.idleMonitor.add_user_active_watch(Lang.bind(this, this._onIdleMonitorBecameActive));
+        }
+    }
+    else
+    {
+        this._idleMonitorWatchId = this.idleMonitor.add_watch(IDLE_TIME,
+                                                              Lang.bind(this, this._onIdleMonitorWatch));
     }
 
     this._notificationClickedId = this._notification.connect('done-displaying',
@@ -142,58 +149,86 @@ let extensionHideNotification = function(animate) {
         this._notification.disconnect(this._notificationExpandedId);
         this._notificationExpandedId = 0;
     }
-    if (this._notificationClickedId) {
-        this._notification.disconnect(this._notificationClickedId);
-        this._notificationClickedId = 0;
-    }
-    if (this._notificationUnfocusedId) {
-        this._notification.disconnect(this._notificationUnfocusedId);
-        this._notificationUnfocusedId = 0;
-    }
-
-    if (ExtensionUtils.versionCheck(['3.9', '3.10'], Config.PACKAGE_VERSION)) {
-        if (this._notificationLeftTimeoutId) {
-            Mainloop.source_remove(this._notificationLeftTimeoutId);
-            this._notificationLeftTimeoutId = 0;
-            this._notificationLeftMouseX = -1;
-            this._notificationLeftMouseY = -1;
+    if (ExtensionUtils.versionCheck(['3.7', '3.8', '3.9', '3.10'], Config.PACKAGE_VERSION)) {
+        if (this._notificationClickedId) {
+            this._notification.disconnect(this._notificationClickedId);
+            this._notificationClickedId = 0;
+        }
+        if (this._notificationUnfocusedId) {
+            this._notification.disconnect(this._notificationUnfocusedId);
+            this._notificationUnfocusedId = 0;
         }
 
-        if (animate) {
-            this._tween(this._notificationWidget, '_notificationState', State.HIDDEN,
-// JRL changes begin
-//                        { y: this.actor.height,
-                        { y: -global.screen_height,
-// JRL changes end
-                          opacity: 0,
-                          time: ANIMATION_TIME,
-                          transition: 'easeOutQuad',
-                          onComplete: this._hideNotificationCompleted,
-                          onCompleteScope: this
-                        });
-        } else {
-            Tweener.removeTweens(this._notificationWidget);
-// JRL changes begin
-//            this._notificationWidget.y = this.actor.height;
-            this._notificationWidget.y = -global.screen_height;
-// JRL changes end
-            this._notificationWidget.opacity = 0;
-            this._notificationState = State.HIDDEN;
-            this._hideNotificationCompleted();
+        if (ExtensionUtils.versionCheck(['3.9', '3.10'], Config.PACKAGE_VERSION)) {
+            if (this._notificationLeftTimeoutId) {
+                Mainloop.source_remove(this._notificationLeftTimeoutId);
+                this._notificationLeftTimeoutId = 0;
+                this._notificationLeftMouseX = -1;
+                this._notificationLeftMouseY = -1;
+            }
+
+            if (animate) {
+                this._tween(this._notificationWidget, '_notificationState', State.HIDDEN,
+                            // JRL changes begin
+                            //{ y: this.actor.height,
+                            { y: -global.screen_height,
+                            // JRL changes end
+                              opacity: 0,
+                              time: ANIMATION_TIME,
+                              transition: 'easeOutQuad',
+                              onComplete: this._hideNotificationCompleted,
+                              onCompleteScope: this
+                            });
+            } else {
+                Tweener.removeTweens(this._notificationWidget);
+                // JRL changes begin
+                //this._notificationWidget.y = this.actor.height;
+                this._notificationWidget.y = -global.screen_height;
+                // JRL changes end
+                this._notificationWidget.opacity = 0;
+                this._notificationState = State.HIDDEN;
+                this._hideNotificationCompleted();
+            }
+        }
+        else
+        {
+            this._useLongerTrayLeftTimeout = false;
+            if (this._trayLeftTimeoutId) {
+                Mainloop.source_remove(this._trayLeftTimeoutId);
+                this._trayLeftTimeoutId = 0;
+                this._trayLeftMouseX = -1;
+                this._trayLeftMouseY = -1;
+            }
+
+            if (this._notificationRemoved) {
+                Tweener.removeTweens(this._notificationWidget);
+                // JRL changes begin
+                //this._notificationWidget.y = this.actor.height;
+                this._notificationWidget.y = -global.screen_height;
+                // JRL changes end
+                this._notificationWidget.opacity = 0;
+                this._notificationState = State.HIDDEN;
+                this._hideNotificationCompleted();
+            } else {
+                this._tween(this._notificationWidget, '_notificationState', State.HIDDEN,
+                            // JRL changes begin
+                            //{ y: this.actor.height,
+                            { y: -global.screen_height,
+                            // JRL changes end
+                              opacity: 0,
+                              time: ANIMATION_TIME,
+                              transition: 'easeOutQuad',
+                              onComplete: this._hideNotificationCompleted,
+                              onCompleteScope: this
+                            });
+
+            }
         }
     }
     else
     {
-        this._useLongerTrayLeftTimeout = false;
-        if (this._trayLeftTimeoutId) {
-            Mainloop.source_remove(this._trayLeftTimeoutId);
-            this._trayLeftTimeoutId = 0;
-            this._trayLeftMouseX = -1;
-            this._trayLeftMouseY = -1;
-        }
 
         if (this._notificationRemoved) {
-            Tweener.removeTweens(this._notificationWidget);
 // JRL changes begin
 //            this._notificationWidget.y = this.actor.height;
             this._notificationWidget.y = -global.screen_height;
@@ -233,13 +268,20 @@ let extensionUpdateShowingNotification = function() {
     this._notification._table.add_style_class_name('jrlnotification');
 // JRL changes end
     this._notification.acknowledged = true;
-    this._notification.playSound();
-
-    // We auto-expand notifications with CRITICAL urgency, or for which the relevant setting
-    // is on in the control center.
-    if (this._notification.urgency == Urgency.CRITICAL ||
-        this._notification.source.policy.forceExpanded)
-        this._expandNotification(true);
+    if (ExtensionUtils.versionCheck(['3.7', '3.8', '3.9', '3.10'], Config.PACKAGE_VERSION)) {
+        this._notification.playSound();
+        // We auto-expand notifications with CRITICAL urgency, or for which the relevant setting
+        // is on in the control center.
+        if (this._notification.urgency == Urgency.CRITICAL ||
+            this._notification.source.policy.forceExpanded)
+            this._expandNotification(true);
+    }
+    else
+    {
+        // We auto-expand notifications with CRITICAL urgency.
+        if (this._notification.urgency == Urgency.CRITICAL)
+            this._expandNotification(true);
+    }
 
     // We tween all notifications to full opacity. This ensures that both new notifications and
     // notifications that might have been in the process of hiding get full opacity.
