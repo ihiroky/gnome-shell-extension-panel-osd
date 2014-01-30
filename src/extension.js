@@ -91,10 +91,10 @@ let extensionShowNotification = function () {
     this._notificationBin.child = this._notification.actor;
 
     this._notificationWidget.opacity = 0;
-// JRL changes begin
-//    this._notificationWidget.y = 0;
+    // JRL changes begin
+    //this._notificationWidget.y = 0;
     this._notificationWidget.y = -global.screen_height;
-// JRL changes end
+    // JRL changes end
 
 
     this._notificationWidget.show();
@@ -229,19 +229,19 @@ let extensionHideNotification = function(animate) {
     {
 
         if (this._notificationRemoved) {
-// JRL changes begin
-//            this._notificationWidget.y = this.actor.height;
+            // JRL changes begin
+            //this._notificationWidget.y = this.actor.height;
             this._notificationWidget.y = -global.screen_height;
-// JRL changes end
+            // JRL changes end
             this._notificationWidget.opacity = 0;
             this._notificationState = State.HIDDEN;
             this._hideNotificationCompleted();
         } else {
             this._tween(this._notificationWidget, '_notificationState', State.HIDDEN,
-// JRL changes begin
-//                        { y: this.actor.height,
+                        // JRL changes begin
+                        //{ y: this.actor.height,
                         { y: -global.screen_height,
-// JRL changes end
+                        // JRL changes end
                           opacity: 0,
                           time: ANIMATION_TIME,
                           transition: 'easeOutQuad',
@@ -263,10 +263,10 @@ let extensionHideNotification = function(animate) {
  *
  */
 let extensionUpdateShowingNotification = function() {
-// JRL changes begin
+    // JRL changes begin
     // add own class-name to change border-radius, otherwise the changed value remains after switching off the extension
     this._notification._table.add_style_class_name('jrlnotification');
-// JRL changes end
+    // JRL changes end
     this._notification.acknowledged = true;
     if (ExtensionUtils.versionCheck(['3.7', '3.8', '3.9', '3.10'], Config.PACKAGE_VERSION)) {
         this._notification.playSound();
@@ -295,10 +295,10 @@ let extensionUpdateShowingNotification = function() {
     // notification is being shown.
 
     let tweenParams = { opacity: 255,
-// JRL changes begin
-//                        y: -this._notificationWidget.height,
+                        // JRL changes begin
+                        //y: -this._notificationWidget.height,
                         y: panel.height - global.screen_height,
-// JRL changes end
+                        // JRL changes end
                         time: ANIMATION_TIME,
                         transition: 'easeOutQuad',
                         onComplete: this._showNotificationCompleted,
@@ -317,10 +317,10 @@ let extensionUpdateShowingNotification = function() {
  *
  */
 let extensiononNotificationExpanded = function() {
-// JRL changes begin
-//    let expandedY = - this._notificationWidget.height;
+    // JRL changes begin
+    //let expandedY = - this._notificationWidget.height;
     let expandedY = panel.height - global.screen_height;
-// JRL changes end
+    // JRL changes end
     this._closeButton.show();
 
     // Don't animate the notification to its new position if it has shrunk:
