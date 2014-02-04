@@ -355,7 +355,8 @@ function enable() {
  */
 function disable() {
     // remove our style, in case we just show a notification, otherwise the radius is drawn incorrect
-    Main.messageTray._notification._table.remove_style_class_name('jrlnotification');
+    if(Main.messageTray._notification)
+        Main.messageTray._notification._table.remove_style_class_name('jrlnotification');
     Main.messageTray._showNotification = originalShowNotification;
     Main.messageTray._hideNotification = originalHideNotification;
     Main.messageTray._updateShowingNotification = originalUpdateShowingNotification;
