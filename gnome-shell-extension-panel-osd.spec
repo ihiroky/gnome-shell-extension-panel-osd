@@ -18,6 +18,7 @@ BuildRequires:  autoconf >= 2.53, automake >= 1.9, gnome-common >= 3.6.0
 Requires:       gnome-shell >= 3.6.0
 
 Obsoletes: gnome-shell-extension-top-notification
+Provides: gnome-shell-extension-top-notification
 
 %description
 gnome-shell-extension-panel-osd is an extension to show the notification
