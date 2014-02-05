@@ -5,7 +5,7 @@
 
 Name:           gnome-shell-extension-panel-osd
 Version:        0
-Release:        0.1.%{checkout}%{?dist}
+Release:        0.1.%(date +%Y%m%d).%{checkout}%{?dist}
 Summary:        An extension to show the notification messages below the top-panel instead of above the message tray
 
 Group:          User Interface/Desktops
