@@ -1,12 +1,16 @@
-![Screenshot](https://github.com/jenslody/gnome-shell-extension-top-notification/raw/master/data/Screenshot.jpg)
+![Screenshot](https://github.com/jenslody/gnome-shell-extension-panel-osd/raw/master/data/Screenshot.jpg)
 
-*gnome-shell-extension-top-notification* is an extension to place shell notifications under the panel instead of above the message-tray.
+*gnome-shell-extension-panel-osd* is an extension to place shell notifications under the panel instead of above the message-tray.
 
 ----
 
 # Installation
 
-After the installation, restart GNOME Shell (`Alt`+`F2`, `r`, `Enter`) and enable the extension through *gnome-tweak-tool*.
+After the installation, you might need to restart GNOME Shell (`Alt`+`F2`, `r`, `Enter`) and enable the extension through *gnome-tweak-tool*.
+
+## Through extensions.gnome.org (Local installation)
+
+Go on the [Panel OSD](https://extensions.gnome.org/extension/708/panel-osd/) extension page on extensions.gnome.org, click on the switch ("OFF" => "ON"), click on the install button. That's it !
 
 ## Through a package manager
 
@@ -25,7 +29,7 @@ If it is not installed automatically, just run:
 
 Now you can install the extension, either via your favourite package-manager or on a console:
 
-    sudo yum install gnome-shell-extension-top-notification
+    sudo yum install gnome-shell-extension-panel-osd
 
 
 ## Generic (Local installation)
@@ -41,8 +45,8 @@ Make sure you have the following dependencies installed:
 
 Run the following commands:
 
-	cd ~ && git clone git://github.com/jenslody/gnome-shell-extension-top-notification.git
-	cd ~/gnome-shell-extension-top-notification
+	cd ~ && git clone git://github.com/jenslody/gnome-shell-extension-panel-osd.git
+	cd ~/gnome-shell-extension-panel-osd
 	./autogen.sh && make local-install
 
 ----
@@ -60,10 +64,10 @@ Copyright (C) 2011 - 2014
 * Berend De Schouwer,
 * Jens Lody <jens@jenslody.de>.
 
-This file is part of *gnome-shell-extension-top-notification*.
+This file is part of *gnome-shell-extension-panel-osd*.
 
-*gnome-shell-extension-top-notification* is free software: you can redistribute it and/or modify it under the terms of the **GNU General Public License as published by the Free Software Foundation, either version 3** of the License, or (at your option) any later version.
+*gnome-shell-extension-panel-osd* is free software: you can redistribute it and/or modify it under the terms of the **GNU General Public License as published by the Free Software Foundation, either version 3** of the License, or (at your option) any later version.
 
-*gnome-shell-extension-top-notification* is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+*gnome-shell-extension-panel-osd* is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with *gnome-shell-extension-top-notification*.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with *gnome-shell-extension-panel-osd*.  If not, see <http://www.gnu.org/licenses/>.

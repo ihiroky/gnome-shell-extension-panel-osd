@@ -1,9 +1,9 @@
-extensionurl = https://github.com/jenslody/gnome-shell-extension-top-notification
+extensionurl = https://github.com/jenslody/gnome-shell-extension-panel-osd
 
 # Change these to modify how installation is performed
 topextensiondir = $(datadir)/gnome-shell/extensions
 
-uuid = top-notification-extension@jenslody.de
+uuid = panel-osd@berend.de.schouwer.gmail.com
 
 extensiondir = $(topextensiondir)/$(uuid)
 

@@ -1,10 +1,10 @@
 #!/bin/sh
 
-GITHUB="jenslody-gnome-shell-extension-top-notification"
-BASE_URL="https://github.com/jenslody/gnome-shell-extension-top-notification/tarball/master/"
+GITHUB="jenslody-gnome-shell-extension-panel-osd"
+BASE_URL="https://github.com/jenslody/gnome-shell-extension-panel-osd/tarball/master/"
 TARBALL_PATH="/home/jens/rpmbuild/SOURCES/"
 SPEC_PATH="/home/jens/rpmbuild/SPECS/"
-SPEC_FILE="gnome-shell-extension-top-notification.spec"
+SPEC_FILE="gnome-shell-extension-panel-osd.spec"
 
 SCRIPT_DIR=`dirname "$0"`
 #echo "x${SCRIPT_DIR}x"

@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
 SUBDIRS = src data
 
-uuid = "top-notification-extension@jenslody.de"
+uuid = panel-osd@berend.de.schouwer.gmail.com
 
 localprefix = $(HOME)/.local/share/gnome-shell/extensions
 
@@ -15,12 +15,12 @@ zip-file: all
 	cp -r "$(builddir)/_build$(datadir)/gnome-shell/extensions/$(uuid)" "$(builddir)/_build"; \
 	cp -r "$(builddir)/_build$(datadir)/locale" "$(builddir)/_build/$(uuid)"; \
 	(cd "$(builddir)/_build/$(uuid)/"; \
-	 zip -qr "$(abs_builddir)/zip-file/top-notification.shell-extension.zip" .; \
+	 zip -qr "$(abs_builddir)/zip-file/panel-osd.shell-extension.zip" .; \
 	); \
 	rm -fR $(builddir)/_build
 
 local-install: zip-file
-	zip_file="$(abs_builddir)/zip-file/top-notification.shell-extension.zip"; \
+	zip_file="$(abs_builddir)/zip-file/panel-osd.shell-extension.zip"; \
 	if [ -d "$(localprefix)/$(uuid)" ]; then \
 	rm -fR "$(localprefix)/$(uuid)"; \
 	fi; \

@@ -1,6 +1,6 @@
 AC_PREREQ(2.63)
 dnl be carefull, the version needs to be in sync with your gnome shell version
-AC_INIT([gnome-shell-extension-top-notification],[1.1],[https://github.com/jenslody/gnome-shell-extension-weather/issues])
+AC_INIT([gnome-shell-extension-panel-osd],[1.1],[https://github.com/jenslody/gnome-shell-extension-panel-osd/issues])
 
 AC_CONFIG_AUX_DIR([config])
 
@@ -34,7 +34,7 @@ AC_ARG_WITH([local-install],
 AC_SUBST(use_local_install)
 AM_CONDITIONAL(LOCAL_INSTALL, test "x${use_local_install}" == "xyes")
 
-extensiontopdir=${datadir}/gnome-shell/extensions/top-notification-extension@jenslody.de
+extensiontopdir=${datadir}/gnome-shell/extensions/panel-osd-extension@jenslody.de
 
 dnl This is beyond ugly. Suggestions accepted.
 if test "x${use_local_install}" == "xyes"; then

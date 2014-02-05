@@ -2,12 +2,12 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="gnome-shell-extension-top-notification" />
+		<Option title="gnome-shell-extension-panel-osd" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="extension">
-				<Option output="bin/Debug/gnome-shell-extension-weather" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/gnome-shell-extension-panel-osd" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -28,11 +28,11 @@
 		<Unit filename="autogen.sh" />
 		<Unit filename="configure.ac" />
 		<Unit filename="data/Makefile.am" />
+		<Unit filename="data/PanelOSD.png" />
 		<Unit filename="data/Screenshot.jpg" />
-		<Unit filename="data/TopNotification.png" />
 		<Unit filename="data/metadata.json.in" />
 		<Unit filename="data/stylesheet.css" />
-		<Unit filename="gnome-shell-extension-top-notification.spec" />
+		<Unit filename="gnome-shell-extension-panel-osd.spec" />
 		<Unit filename="src/Makefile.am" />
 		<Unit filename="src/extension.js" />
 		<Unit filename="update_revision.sh" />

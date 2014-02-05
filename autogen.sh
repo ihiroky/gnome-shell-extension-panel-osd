@@ -4,7 +4,7 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-PKG_NAME="gnome-shell-extension-top-notification"
+PKG_NAME="gnome-shell-extension-panel-osd"
 
 touch ChangeLog
 
