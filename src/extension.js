@@ -283,6 +283,16 @@ let extensionUpdateShowingNotification = function() {
             this._expandNotification(true);
     }
 
+    // JRL changes begin
+    // use panel's y and height property to determine the bottom of the top-panel.
+    // needed because the "hide top bar" and "hide top panel" use different approaches to hide the
+    // top bar.
+    // "hide top panel" keeps the haeight and just moves the panel out of the visible area, so using
+    // the panels-height is not enough.
+    let yPos = panel.y + panel.height - global.screen_height;
+    if (yPos < (-global.screen_height))
+        yPos = -global.screen_height;
+    // JRL changes end
     // We tween all notifications to full opacity. This ensures that both new notifications and
     // notifications that might have been in the process of hiding get full opacity.
     //
@@ -297,7 +307,7 @@ let extensionUpdateShowingNotification = function() {
     let tweenParams = { opacity: 255,
                         // JRL changes begin
                         //y: -this._notificationWidget.height,
-                        y: panel.height - global.screen_height,
+                        y: yPos,
                         // JRL changes end
                         time: ANIMATION_TIME,
                         transition: 'easeOutQuad',
@@ -319,7 +329,9 @@ let extensionUpdateShowingNotification = function() {
 let extensiononNotificationExpanded = function() {
     // JRL changes begin
     //let expandedY = - this._notificationWidget.height;
-    let expandedY = panel.height - global.screen_height;
+    let expandedY = panel.y + panel.height - global.screen_height;
+    if (expandedY < (-global.screen_height))
+        expandedY = -global.screen_height;
     // JRL changes end
     this._closeButton.show();
 
