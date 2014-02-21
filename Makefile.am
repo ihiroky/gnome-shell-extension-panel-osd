@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
-SUBDIRS = src data
+SUBDIRS = src data po
 
 uuid = panel-osd@berend.de.schouwer.gmail.com
 
@@ -13,6 +13,11 @@ zip-file: all
 	$(MKDIR_P) $(builddir)/zip-file; \
 	$(MAKE) install DESTDIR="$(abs_builddir)/_build"; \
 	cp -r "$(builddir)/_build$(datadir)/gnome-shell/extensions/$(uuid)" "$(builddir)/_build"; \
+	if [ -f "$(builddir)/_build$(datadir)/glib-2.0/schemas/org.gnome.shell.extensions.panel-osd.gschema.xml" ]; then \
+		$(MKDIR_P) "$(builddir)/_build/$(uuid)/schemas"; \
+		mv "$(builddir)/_build$(datadir)/glib-2.0/schemas/org.gnome.shell.extensions.panel-osd.gschema.xml" "$(builddir)/_build/$(uuid)/schemas"; \
+		glib-compile-schemas "$(builddir)/_build/$(uuid)/schemas"; \
+	fi; \
 	cp -r "$(builddir)/_build$(datadir)/locale" "$(builddir)/_build/$(uuid)"; \
 	(cd "$(builddir)/_build/$(uuid)/"; \
 	 zip -qr "$(abs_builddir)/zip-file/panel-osd.shell-extension.zip" .; \

@@ -4,7 +4,7 @@
  *  We're grabbing "private" methods (start with _), so expect this to break
  *  with different versions of Gnome Shell.
  *
- *  It was tested with 3.8.3, with various themes.
+ *  It was tested with 3.6 to 3.11.90 with various themes.
  *
  *  Most of this code is a direct copy from gnome-shell/js/ui/messageTray.js,
  *  so (C)opyright Gnome-Team, I think :)
@@ -18,6 +18,15 @@ const Main = imports.ui.main;
 const Tweener = imports.ui.tweener;
 const LayoutManager = Main.layoutManager;
 const Lang = imports.lang;
+const Me = ExtensionUtils.getCurrentExtension();
+const Convenience = Me.imports.convenience;
+
+const EXTENSIONDIR = Me.dir.get_path();
+
+const PANEL_OSD_SETTINGS_SCHEMA = 'org.gnome.shell.extensions.panel-osd';
+const PANEL_OSD_X_POS_KEY = 'x-pos';
+
+
 
 /*
  *  Save MessageTray's original methods.  We're going to change these
@@ -47,7 +56,7 @@ const Urgency = {
     NORMAL: 1,
     HIGH: 2,
     CRITICAL: 3
-}
+};
 const State = {
     HIDDEN:  0,
     SHOWING: 1,
@@ -56,6 +65,18 @@ const State = {
 };
 
 function init() {
+}
+
+let Settings;
+
+let loadConfig = function() {
+    Settings = Convenience.getSettings(PANEL_OSD_SETTINGS_SCHEMA);
+};
+
+let getX_position = function() {
+    if (!Settings)
+        loadConfig();
+    return Settings.get_double(PANEL_OSD_X_POS_KEY);
 }
 
 
@@ -287,11 +308,13 @@ let extensionUpdateShowingNotification = function() {
     // use panel's y and height property to determine the bottom of the top-panel.
     // needed because the "hide top bar" and "hide top panel" use different approaches to hide the
     // top bar.
-    // "hide top panel" keeps the haeight and just moves the panel out of the visible area, so using
+    // "hide top panel" keeps the height and just moves the panel out of the visible area, so using
     // the panels-height is not enough.
     let yPos = panel.y + panel.height - global.screen_height;
     if (yPos < (-global.screen_height))
         yPos = -global.screen_height;
+    //
+    this._notificationWidget.x = (global.screen_width - this._notificationWidget.width) * (getX_position() - 50) / 50 ;
     // JRL changes end
     // We tween all notifications to full opacity. This ensures that both new notifications and
     // notifications that might have been in the process of hiding get full opacity.
@@ -369,6 +392,8 @@ function disable() {
     // remove our style, in case we just show a notification, otherwise the radius is drawn incorrect
     if(Main.messageTray._notification)
         Main.messageTray._notification._table.remove_style_class_name('jrlnotification');
+    // reset x-position
+    notificationWidget.x = originalNotificationWidgetX;
     Main.messageTray._showNotification = originalShowNotification;
     Main.messageTray._hideNotification = originalHideNotification;
     Main.messageTray._updateShowingNotification = originalUpdateShowingNotification;

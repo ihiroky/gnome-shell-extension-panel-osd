@@ -2,6 +2,7 @@ AC_PREREQ(2.63)
 dnl be carefull, the version needs to be in sync with your gnome shell version
 AC_INIT([gnome-shell-extension-panel-osd],[1.1],[https://github.com/jenslody/gnome-shell-extension-panel-osd/issues])
 
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([config])
 
 AM_INIT_AUTOMAKE([1.10 dist-xz foreign])
@@ -10,6 +11,11 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AC_PROG_SED
 
+GETTEXT_PACKAGE=gnome-shell-extension-panel-osd
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE",
+                   [The prefix for our gettext translation domains.])
+IT_PROG_INTLTOOL(0.26)
 PKG_PROG_PKG_CONFIG([0.22])
 
 GLIB_GSETTINGS
@@ -38,6 +44,7 @@ extensiontopdir=${datadir}/gnome-shell/extensions/panel-osd-extension@jenslody.d
 
 dnl This is beyond ugly. Suggestions accepted.
 if test "x${use_local_install}" == "xyes"; then
+   AC_SUBST(gsettingsschemadir, [${extensiontopdir}/schemas])
    AC_SUBST(LOCALEDIR, [${extensiontopdir}/locale])
 else
    AC_SUBST(LOCALEDIR, [${datadir}/locale])
@@ -47,10 +54,16 @@ dnl Please keep this sorted alphabetically.
 AC_CONFIG_FILES([
   Makefile
   data/Makefile
+  po/Makefile.in
   src/Makefile
 ])
 AC_OUTPUT
 
+dnl 'Fugly hack' doesn't get close to describe this. I don't know how else
+dnl to change the directory for translations.
+if test "x${use_local_install}" == "xyes"; then
+   ${SED} -i -e "s%itlocaledir = .*%itlocaledir = ${extensiontopdir}/locale%g" po/Makefile
+fi
 if test "x$use_local_install" == "xyes"; then
    echo
    echo "The extension will be installed locally in the userdatadir."

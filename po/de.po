@@ -1,0 +1,8 @@
+#: ../data/panel-osd-settings.ui:21
+#, fuzzy
+msgid "Horizontal position [%] from 0% (left) to 100% (right)"
+msgstr "Horizontale Position [%] von links (0%) bis rechts (100%)"
+
+#: ../data/panel-osd-settings.ui:64
+msgid "Reset to defaults"
+msgstr "Auf Standardwert zurücksetzen"

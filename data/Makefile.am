@@ -7,7 +7,7 @@ uuid = panel-osd@berend.de.schouwer.gmail.com
 
 extensiondir = $(topextensiondir)/$(uuid)
 
-dist_extension_DATA = stylesheet.css
+dist_extension_DATA = stylesheet.css panel-osd-settings.ui
 
 nodist_extension_DATA = metadata.json $(EXTRA_EXTENSION)
 
@@ -19,3 +19,12 @@ metadata.json: metadata.json.in $(top_builddir)/config.status
 	    -e "s|[@]url@|$(extensionurl)|" $< > $@
 
 CLEANFILES = metadata.json
+
+gschemas_in = org.gnome.shell.extensions.panel-osd.gschema.xml.in
+
+@INTLTOOL_XML_NOMERGE_RULE@
+
+gsettings_SCHEMAS = $(gschemas_in:.xml.in=.xml) @GSETTINGS_RULES@
+
+EXTRA_DIST += $(gschemas_in)
+CLEANFILES += $(gschemas_in:.xml.in=.valid) $(gsettings_SCHEMAS)
