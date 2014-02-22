@@ -14,7 +14,7 @@ URL:            https://github.com/jenslody/gnome-shell-extension-panel-osd
 Source0:        https://github.com/jenslody/gnome-shell-extension-panel-osd/tarball/master/%{github}-%{git}.tar.gz
 BuildArch:      noarch
 
-BuildRequires:  autoconf >= 2.53, automake >= 1.9, gnome-common >= 3.6.0, intltool >= 0.25
+BuildRequires:  autoconf >= 2.53, automake >= 1.9, glib2-devel, gnome-common >= 3.6.0, intltool >= 0.25
 Requires:       gnome-shell >= 3.6.0
 
 Obsoletes: gnome-shell-extension-top-notification
