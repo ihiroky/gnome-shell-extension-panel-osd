@@ -5,7 +5,7 @@
 
 Name:           gnome-shell-extension-panel-osd
 Version:        0
-Release:        0.1.%(date +%Y%m%d).%{checkout}%{?dist}
+Release:        0.2.%(date +%Y%m%d).%{checkout}%{?dist}
 Summary:        An extension to show the notification messages below the top-panel instead of above the message tray
 
 Group:          User Interface/Desktops
@@ -34,12 +34,24 @@ make %{?_smp_mflags}
 
 %install
 make install DESTDIR=%{buildroot}
+%find_lang %{name}
 
-%files
+%postun
+if [ $1 -eq 0 ] ; then
+        %{_bindir}/glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
+fi
+
+%posttrans
+%{_bindir}/glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
+
+%files -f %{name}.lang
 %doc AUTHORS COPYING README.md
+%{_datadir}/glib-2.0/schemas/org.gnome.shell.extensions.openweather.gschema.xml
 %{_datadir}/gnome-shell/extensions/%{uuid}/
 
 %changelog
+* Sat Feb 22 2014 Jens Lody <jens@jenslody.de>
+- Added translation files, needed for newest upstream.
 * Sun Jan 26 2014 Jens Lody <jens@jenslody.de>
 - Initial package for Fedora of the panel-osd-extension fork
 
