@@ -25,6 +25,7 @@ const EXTENSIONDIR = Me.dir.get_path();
 
 const PANEL_OSD_SETTINGS_SCHEMA = 'org.gnome.shell.extensions.panel-osd';
 const PANEL_OSD_X_POS_KEY = 'x-pos';
+const PANEL_OSD_Y_POS_KEY = 'y-pos';
 
 
 
@@ -79,6 +80,12 @@ let getX_position = function() {
     return Settings.get_double(PANEL_OSD_X_POS_KEY);
 }
 
+let gety_position = function() {
+    if (!Settings)
+        loadConfig();
+    return Settings.get_double(PANEL_OSD_Y_POS_KEY);
+}
+
 
 /*
  *  Copied from MessageTray._showNotification()
@@ -114,7 +121,10 @@ let extensionShowNotification = function () {
     this._notificationWidget.opacity = 0;
     // JRL changes begin
     //this._notificationWidget.y = 0;
-    this._notificationWidget.y = -global.screen_height;
+    let yTop = -global.screen_height;
+    let yBottom = 0;
+
+    this._notificationWidget.y = (yTop - yBottom) * gety_position() / 100 + yBottom;
     // JRL changes end
 
 
@@ -170,12 +180,19 @@ let extensionHideNotification = function(animate) {
         this._notification.disconnect(this._notificationExpandedId);
         this._notificationExpandedId = 0;
     }
+    // JRL changes begin
+    let yPos;
+    if (gety_position() < 50)
+        yPos = this.actor.height;
+    else
+        yPos = -global.screen_height;
+    // JRL changes end
     if (ExtensionUtils.versionCheck(['3.6'], Config.PACKAGE_VERSION)) {
 
         if (this._notificationRemoved) {
             // JRL changes begin
             //this._notificationWidget.y = this.actor.height;
-            this._notificationWidget.y = -global.screen_height;
+            this._notificationWidget.y = yPos;
             // JRL changes end
             this._notificationWidget.opacity = 0;
             this._notificationState = State.HIDDEN;
@@ -184,7 +201,7 @@ let extensionHideNotification = function(animate) {
             this._tween(this._notificationWidget, '_notificationState', State.HIDDEN,
                         // JRL changes begin
                         //{ y: this.actor.height,
-                        { y: -global.screen_height,
+                        { y: yPos,
                         // JRL changes end
                           opacity: 0,
                           time: ANIMATION_TIME,
@@ -219,7 +236,7 @@ let extensionHideNotification = function(animate) {
                 Tweener.removeTweens(this._notificationWidget);
                 // JRL changes begin
                 //this._notificationWidget.y = this.actor.height;
-                this._notificationWidget.y = -global.screen_height;
+                this._notificationWidget.y = yPos;
                 // JRL changes end
                 this._notificationWidget.opacity = 0;
                 this._notificationState = State.HIDDEN;
@@ -228,7 +245,7 @@ let extensionHideNotification = function(animate) {
                 this._tween(this._notificationWidget, '_notificationState', State.HIDDEN,
                             // JRL changes begin
                             //{ y: this.actor.height,
-                            { y: -global.screen_height,
+                            { y: yPos,
                             // JRL changes end
                               opacity: 0,
                               time: ANIMATION_TIME,
@@ -252,7 +269,7 @@ let extensionHideNotification = function(animate) {
                 this._tween(this._notificationWidget, '_notificationState', State.HIDDEN,
                             // JRL changes begin
                             //{ y: this.actor.height,
-                            { y: -global.screen_height,
+                            { y: yPos,
                             // JRL changes end
                               opacity: 0,
                               time: ANIMATION_TIME,
@@ -264,7 +281,7 @@ let extensionHideNotification = function(animate) {
                 Tweener.removeTweens(this._notificationWidget);
                 // JRL changes begin
                 //this._notificationWidget.y = this.actor.height;
-                this._notificationWidget.y = -global.screen_height;
+                this._notificationWidget.y = yPos;
                 // JRL changes end
                 this._notificationWidget.opacity = 0;
                 this._notificationState = State.HIDDEN;
@@ -286,7 +303,16 @@ let extensionHideNotification = function(animate) {
 let extensionUpdateShowingNotification = function() {
     // JRL changes begin
     // add own class-name to change border-radius, otherwise the changed value remains after switching off the extension
-    this._notification._table.add_style_class_name('jrlnotification');
+    this._notification._table.remove_style_class_name('jrlnotification');
+    this._notification._table.remove_style_class_name('jrlnotification_top');
+    this._notification._table.remove_style_class_name('jrlnotification_bottom');
+    if (gety_position() <= 0.1)
+        this._notification._table.add_style_class_name('jrlnotification_bottom');
+    else if (gety_position() >= 99.9)
+        this._notification._table.add_style_class_name('jrlnotification_top');
+    else
+        this._notification._table.add_style_class_name('jrlnotification');
+
     // JRL changes end
     this._notification.acknowledged = true;
     if (ExtensionUtils.versionCheck(['3.6'], Config.PACKAGE_VERSION)) {
@@ -310,9 +336,12 @@ let extensionUpdateShowingNotification = function() {
     // top bar.
     // "hide top panel" keeps the height and just moves the panel out of the visible area, so using
     // the panels-height is not enough.
-    let yPos = panel.y + panel.height - global.screen_height;
-    if (yPos < (-global.screen_height))
-        yPos = -global.screen_height;
+    let yTop = panel.y + panel.height - global.screen_height;
+    if (yTop < (-global.screen_height))
+        yTop = -global.screen_height;
+    let yBottom = -this._notificationWidget.height;
+
+    let yPos = (yTop - yBottom) * gety_position() / 100 + yBottom;
     //
     this._notificationWidget.x = (global.screen_width - this._notificationWidget.width) * (getX_position() - 50) / 50 ;
     // JRL changes end
@@ -352,9 +381,12 @@ let extensionUpdateShowingNotification = function() {
 let extensiononNotificationExpanded = function() {
     // JRL changes begin
     //let expandedY = - this._notificationWidget.height;
-    let expandedY = panel.y + panel.height - global.screen_height;
-    if (expandedY < (-global.screen_height))
-        expandedY = -global.screen_height;
+    let yTop = panel.y + panel.height - global.screen_height;
+    if (yTop < (-global.screen_height))
+        yTop = -global.screen_height;
+    let yBottom = -this._notificationWidget.height;
+
+    let expandedY = (yTop - yBottom) * gety_position() / 100 + yBottom;
     // JRL changes end
     this._closeButton.show();
 
@@ -391,7 +423,11 @@ function enable() {
 function disable() {
     // remove our style, in case we just show a notification, otherwise the radius is drawn incorrect
     if(Main.messageTray._notification)
+    {
         Main.messageTray._notification._table.remove_style_class_name('jrlnotification');
+        Main.messageTray._notification._table.remove_style_class_name('jrlnotification_top');
+        Main.messageTray._notification._table.remove_style_class_name('jrlnotification_bottom');
+    }
     // reset x-position
     notificationWidget.x = originalNotificationWidgetX;
     Main.messageTray._showNotification = originalShowNotification;

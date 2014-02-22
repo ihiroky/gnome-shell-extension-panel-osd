@@ -4,5 +4,9 @@
       <default>50.0</default>
       <_summary>Horizontal position of notification.</_summary>
     </key>
+    <key name="y-pos" type="d">
+      <default>0.0</default>
+      <_summary>Vertical position of notification.</_summary>
+    </key>
   </schema>
 </schemalist>

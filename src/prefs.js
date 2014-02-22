@@ -15,6 +15,7 @@ const EXTENSIONDIR = Me.dir.get_path();
 
 const PANEL_OSD_SETTINGS_SCHEMA = 'org.gnome.shell.extensions.panel-osd';
 const PANEL_OSD_X_POS_KEY = 'x-pos';
+const PANEL_OSD_Y_POS_KEY = 'y-pos';
 
 const PanelOsdPrefsWidget = new GObject.Class({
     Name: 'PanelOsdExtension.Prefs.Widget',
@@ -52,8 +53,24 @@ const PanelOsdPrefsWidget = new GObject.Class({
 
         }));
 
+        this.y_scale = this.Window.get_object("scale-y-pos");
+        this.y_scale.set_value(this.y_position);
+        // prevent from continously updating the value
+        this.yScaleTimeout = undefined;
+        this.y_scale.connect("value-changed", Lang.bind(this, function(slider) {
+
+            if (this.yScaleTimeout != undefined)
+                Mainloop.source_remove(this.yScaleTimeout);
+            this.yScaleTimeout = Mainloop.timeout_add(250, Lang.bind(this, function() {
+                this.y_position = slider.get_value();
+                return false;
+            }));
+
+        }));
+
         this.Window.get_object("button-reset").connect("clicked", Lang.bind(this, function() {
-            this.x_scale.set_value(50);;
+            this.x_scale.set_value(50);
+            this.y_scale.set_value(0);
         }));
 
 
@@ -73,6 +90,18 @@ const PanelOsdPrefsWidget = new GObject.Class({
         if (!this.Settings)
             this.loadConfig();
         this.Settings.set_double(PANEL_OSD_X_POS_KEY, v);
+    },
+
+    get y_position() {
+        if (!this.Settings)
+            this.loadConfig();
+        return this.Settings.get_double(PANEL_OSD_Y_POS_KEY);
+    },
+
+    set y_position(v) {
+        if (!this.Settings)
+            this.loadConfig();
+        this.Settings.set_double(PANEL_OSD_Y_POS_KEY, v);
     }
 
 });
