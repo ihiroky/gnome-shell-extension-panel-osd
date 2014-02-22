@@ -46,7 +46,7 @@ fi
 
 %files -f %{name}.lang
 %doc AUTHORS COPYING README.md
-%{_datadir}/glib-2.0/schemas/org.gnome.shell.extensions.openweather.gschema.xml
+%{_datadir}/glib-2.0/schemas/org.gnome.shell.extensions.panel-osd.gschema.xml
 %{_datadir}/gnome-shell/extensions/%{uuid}/
 
 %changelog
