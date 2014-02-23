@@ -1,10 +1,10 @@
-%global git 2740ca9
+%global git 60eff04
 %global uuid panel-osd@berend.de.schouwer.gmail.com
 %global github jenslody-gnome-shell-extension-panel-osd
 %global checkout git%{git}
 
 Name:           gnome-shell-extension-panel-osd
-Version:        0
+Version:        1
 Release:        0.2.%(date +%Y%m%d).%{checkout}%{?dist}
 Summary:        An extension to show the notification messages below the top-panel instead of above the message tray
 

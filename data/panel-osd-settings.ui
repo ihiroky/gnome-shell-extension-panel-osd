@@ -125,6 +125,7 @@
             <property name="halign">start</property>
             <property name="margin_right">5</property>
             <property name="margin_bottom">10</property>
+            <property name="row_spacing">5</property>
             <child>
               <object class="GtkSwitch" id="switch-x-reset">
                 <property name="visible">True</property>
@@ -143,6 +144,8 @@
               <object class="GtkSwitch" id="switch-y-reset">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="margin_left">10</property>
+                <property name="margin_right">10</property>
               </object>
               <packing>
                 <property name="left_attach">0</property>
