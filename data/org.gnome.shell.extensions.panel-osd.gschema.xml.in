@@ -5,7 +5,15 @@
       <_summary>Horizontal position of notification.</_summary>
     </key>
     <key name="y-pos" type="d">
-      <default>0.0</default>
+      <default>100.0</default>
+      <_summary>Vertical position of notification.</_summary>
+    </key>
+    <key name="x-res" type="b">
+      <default>false</default>
+      <_summary>Horizontal position of notification.</_summary>
+    </key>
+    <key name="y-res" type="b">
+      <default>false</default>
       <_summary>Vertical position of notification.</_summary>
     </key>
   </schema>

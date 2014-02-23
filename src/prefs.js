@@ -16,6 +16,8 @@ const EXTENSIONDIR = Me.dir.get_path();
 const PANEL_OSD_SETTINGS_SCHEMA = 'org.gnome.shell.extensions.panel-osd';
 const PANEL_OSD_X_POS_KEY = 'x-pos';
 const PANEL_OSD_Y_POS_KEY = 'y-pos';
+const PANEL_OSD_ALLOW_X_RESET = 'x-res';
+const PANEL_OSD_ALLOW_Y_RESET = 'y-res';
 
 const PanelOsdPrefsWidget = new GObject.Class({
     Name: 'PanelOsdExtension.Prefs.Widget',
@@ -68,9 +70,28 @@ const PanelOsdPrefsWidget = new GObject.Class({
 
         }));
 
-        this.Window.get_object("button-reset").connect("clicked", Lang.bind(this, function() {
-            this.x_scale.set_value(50);
-            this.y_scale.set_value(0);
+        this.switch_x_reset = this.Window.get_object("switch-x-reset");
+        this.switch_y_reset = this.Window.get_object("switch-y-reset");
+        this.reset_button = this.Window.get_object("button-reset");
+
+        this.switch_x_reset.connect("notify::active", Lang.bind(this, function() {
+            this.x_reset = arguments[0].active;
+            this.reset_button.sensitive = this.x_reset || this.y_reset;
+        }));
+
+        this.switch_y_reset.connect("notify::active", Lang.bind(this, function() {
+            this.y_reset = arguments[0].active;
+            this.reset_button.sensitive = this.x_reset || this.y_reset;
+        }));
+
+        this.switch_x_reset.set_active(this.x_reset);
+        this.switch_y_reset.set_active(this.y_reset);
+
+        this.reset_button.sensitive = this.x_reset || this.y_reset;
+
+        this.reset_button.connect("clicked", Lang.bind(this, function() {
+            this.x_reset && this.x_scale.set_value(50);
+            this.y_reset && this.y_scale.set_value(100);
         }));
 
 
@@ -102,6 +123,30 @@ const PanelOsdPrefsWidget = new GObject.Class({
         if (!this.Settings)
             this.loadConfig();
         this.Settings.set_double(PANEL_OSD_Y_POS_KEY, v);
+    },
+
+    get x_reset() {
+        if (!this.Settings)
+            this.loadConfig();
+        return this.Settings.get_boolean(PANEL_OSD_ALLOW_X_RESET);
+    },
+
+    set x_reset(v) {
+        if (!this.Settings)
+            this.loadConfig();
+        this.Settings.set_boolean(PANEL_OSD_ALLOW_X_RESET, v);
+    },
+
+    get y_reset() {
+        if (!this.Settings)
+            this.loadConfig();
+        return this.Settings.get_boolean(PANEL_OSD_ALLOW_Y_RESET);
+    },
+
+    set y_reset(v) {
+        if (!this.Settings)
+            this.loadConfig();
+        this.Settings.set_boolean(PANEL_OSD_ALLOW_Y_RESET, v);
     }
 
 });
