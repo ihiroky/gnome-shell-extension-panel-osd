@@ -1,3 +1,4 @@
+/* jshint esnext:true */
 /*
  *  Idea: Grab MessageTray OSD widget, and give it new .x and .y co-ordinates.
  *

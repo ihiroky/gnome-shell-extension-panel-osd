@@ -1,3 +1,4 @@
+/* jshint esnext:true */
 const Gtk = imports.gi.Gtk;
 const GObject = imports.gi.GObject;
 const GtkBuilder = Gtk.Builder;
@@ -46,7 +47,7 @@ const PanelOsdPrefsWidget = new GObject.Class({
         this.xScaleTimeout = undefined;
         this.x_scale.connect("value-changed", Lang.bind(this, function(slider) {
 
-            if (this.xScaleTimeout != undefined)
+            if (this.xScaleTimeout !== undefined)
                 Mainloop.source_remove(this.xScaleTimeout);
             this.xScaleTimeout = Mainloop.timeout_add(250, Lang.bind(this, function() {
                 this.x_position = slider.get_value();
@@ -61,7 +62,7 @@ const PanelOsdPrefsWidget = new GObject.Class({
         this.yScaleTimeout = undefined;
         this.y_scale.connect("value-changed", Lang.bind(this, function(slider) {
 
-            if (this.yScaleTimeout != undefined)
+            if (this.yScaleTimeout !== undefined)
                 Mainloop.source_remove(this.yScaleTimeout);
             this.yScaleTimeout = Mainloop.timeout_add(250, Lang.bind(this, function() {
                 this.y_position = slider.get_value();
@@ -90,8 +91,8 @@ const PanelOsdPrefsWidget = new GObject.Class({
         this.reset_button.sensitive = this.x_reset || this.y_reset;
 
         this.reset_button.connect("clicked", Lang.bind(this, function() {
-            this.x_reset && this.x_scale.set_value(50);
-            this.y_reset && this.y_scale.set_value(100);
+            if (this.x_reset) this.x_scale.set_value(50);
+            if (this.y_reset) this.y_scale.set_value(100);
         }));
 
 
