@@ -77,13 +77,13 @@ let getX_position = function() {
     if (!Settings)
         loadConfig();
     return Settings.get_double(PANEL_OSD_X_POS_KEY);
-}
+};
 
 let gety_position = function() {
     if (!Settings)
         loadConfig();
     return Settings.get_double(PANEL_OSD_Y_POS_KEY);
-}
+};
 
 
 /*
@@ -144,7 +144,7 @@ let extensionShowNotification = function() {
     // the mouse is moving towards it or within it.
     this._lastSeenMouseX = x;
     this._lastSeenMouseY = y;
-}
+};
 
 
 /*
@@ -288,7 +288,7 @@ let extensionHideNotification = function(animate) {
             }
         }
     }
-}
+};
 
 
 /*
@@ -367,7 +367,7 @@ let extensionUpdateShowingNotification = function() {
                       };
 
     this._tween(this._notificationWidget, '_notificationState', State.SHOWN, tweenParams);
-}
+};
 
 /*
  *  Copied from MessageTray._onNotificationExpanded()
@@ -403,7 +403,7 @@ let extensiononNotificationExpanded = function() {
                       transition: 'easeOutQuad'
                     });
     }
-}
+};
 
 /*
  *  Overload the methods.
