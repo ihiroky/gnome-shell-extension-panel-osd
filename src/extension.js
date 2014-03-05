@@ -59,14 +59,13 @@ const Urgency = {
     CRITICAL: 3
 };
 const State = {
-    HIDDEN:  0,
+    HIDDEN: 0,
     SHOWING: 1,
-    SHOWN:   2,
-    HIDING:  3
+    SHOWN: 2,
+    HIDING: 3
 };
 
-function init() {
-}
+function init() {}
 
 let Settings;
 
@@ -94,7 +93,7 @@ let gety_position = function() {
  *  the whole method to prevent the animation from moving the OSD across the
  *  entire screen.
  */
-let extensionShowNotification = function () {
+let extensionShowNotification = function() {
     this._notification = this._notificationQueue.shift();
 
     this._userActiveWhileNotificationShown = this.idleMonitor.get_idletime() <= IDLE_TIME;
@@ -343,7 +342,7 @@ let extensionUpdateShowingNotification = function() {
 
     let yPos = (yTop - yBottom) * gety_position() / 100 + yBottom;
     //
-    this._notificationWidget.x = (global.screen_width - this._notificationWidget.width) * (getX_position() - 50) / 50 ;
+    this._notificationWidget.x = (global.screen_width - this._notificationWidget.width) * (getX_position() - 50) / 50;
     // JRL changes end
     // We tween all notifications to full opacity. This ensures that both new notifications and
     // notifications that might have been in the process of hiding get full opacity.
@@ -422,8 +421,7 @@ function enable() {
  */
 function disable() {
     // remove our style, in case we just show a notification, otherwise the radius is drawn incorrect
-    if(Main.messageTray._notification)
-    {
+    if (Main.messageTray._notification) {
         Main.messageTray._notification._table.remove_style_class_name('jrlnotification');
         Main.messageTray._notification._table.remove_style_class_name('jrlnotification_top');
         Main.messageTray._notification._table.remove_style_class_name('jrlnotification_bottom');
