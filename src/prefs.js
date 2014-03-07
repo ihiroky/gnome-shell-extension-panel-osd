@@ -19,6 +19,9 @@ const PANEL_OSD_X_POS_KEY = 'x-pos';
 const PANEL_OSD_Y_POS_KEY = 'y-pos';
 const PANEL_OSD_ALLOW_X_RESET = 'x-res';
 const PANEL_OSD_ALLOW_Y_RESET = 'y-res';
+const PANEL_OSD_FORCE_EXPAND = 'force-expand';
+const PANEL_OSD_TEST_DELAY = 'test-delay';
+const PANEL_OSD_TEST_NOTIFICATION = 'test-notification';
 
 const PanelOsdPrefsWidget = new GObject.Class({
     Name: 'PanelOsdExtension.Prefs.Widget',
@@ -36,6 +39,9 @@ const PanelOsdPrefsWidget = new GObject.Class({
     Window: new Gtk.Builder(),
 
     initWindow: function() {
+        if (this.test_notification)
+            this.test_notification = false;
+
         this.Window.set_translation_domain('gnome-shell-extension-panel-osd');
         this.Window.add_from_file(EXTENSIONDIR + "/panel-osd-settings.ui");
 
@@ -95,6 +101,33 @@ const PanelOsdPrefsWidget = new GObject.Class({
             if (this.y_reset) this.y_scale.set_value(100);
         }));
 
+        this.switch_force_expand = this.Window.get_object("switch-force-expand");
+
+        this.switch_force_expand.set_active(this.force_expand);
+
+        this.switch_force_expand.connect("notify::active", Lang.bind(this, function() {
+            this.force_expand = arguments[0].active;
+        }));
+
+        this.delay_scale = this.Window.get_object("scale-test-delay");
+        this.delay_scale.set_value(this.test_delay);
+        // prevent from continously updating the value
+        this.delayScaleTimeout = undefined;
+        this.delay_scale.connect("value-changed", Lang.bind(this, function(slider) {
+
+            if (this.delayScaleTimeout !== undefined)
+                Mainloop.source_remove(this.delayScaleTimeout);
+            this.delayScaleTimeout = Mainloop.timeout_add(250, Lang.bind(this, function() {
+                this.test_delay = slider.get_value();
+                return false;
+            }));
+
+        }));
+
+        this.Window.get_object("button-test").connect("clicked", Lang.bind(this, function() {
+            this.test_notification = true;
+        }));
+
 
     },
 
@@ -148,6 +181,42 @@ const PanelOsdPrefsWidget = new GObject.Class({
         if (!this.Settings)
             this.loadConfig();
         this.Settings.set_boolean(PANEL_OSD_ALLOW_Y_RESET, v);
+    },
+
+    get force_expand() {
+        if (!this.Settings)
+            this.loadConfig();
+        return this.Settings.get_boolean(PANEL_OSD_FORCE_EXPAND);
+    },
+
+    set force_expand(v) {
+        if (!this.Settings)
+            this.loadConfig();
+        this.Settings.set_boolean(PANEL_OSD_FORCE_EXPAND, v);
+    },
+
+    get test_delay() {
+        if (!this.Settings)
+            this.loadConfig();
+        return this.Settings.get_double(PANEL_OSD_TEST_DELAY);
+    },
+
+    set test_delay(v) {
+        if (!this.Settings)
+            this.loadConfig();
+        this.Settings.set_double(PANEL_OSD_TEST_DELAY, v);
+    },
+
+    get test_notification() {
+        if (!this.Settings)
+            this.loadConfig();
+        return this.Settings.get_boolean(PANEL_OSD_TEST_NOTIFICATION);
+    },
+
+    set test_notification(v) {
+        if (!this.Settings)
+            this.loadConfig();
+        this.Settings.set_boolean(PANEL_OSD_TEST_NOTIFICATION, v);
     }
 
 });

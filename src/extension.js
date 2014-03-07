@@ -17,18 +17,20 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Config = imports.misc.config;
 const Main = imports.ui.main;
 const Tweener = imports.ui.tweener;
-const LayoutManager = Main.layoutManager;
 const Lang = imports.lang;
+const Mainloop = imports.mainloop;
 const Me = ExtensionUtils.getCurrentExtension();
 const Convenience = Me.imports.convenience;
 
-const EXTENSIONDIR = Me.dir.get_path();
+const Gettext = imports.gettext.domain('gnome-shell-extension-panel-osd');
+const _ = Gettext.gettext;
 
 const PANEL_OSD_SETTINGS_SCHEMA = 'org.gnome.shell.extensions.panel-osd';
 const PANEL_OSD_X_POS_KEY = 'x-pos';
 const PANEL_OSD_Y_POS_KEY = 'y-pos';
-
-
+const PANEL_OSD_FORCE_EXPAND = 'force-expand';
+const PANEL_OSD_TEST_DELAY = 'test-delay';
+const PANEL_OSD_TEST_NOTIFICATION = 'test-notification';
 
 /*
  *  Save MessageTray's original methods.  We're going to change these
@@ -66,12 +68,28 @@ const State = {
     HIDING: 3
 };
 
-function init() {}
+function init() {
+    Convenience.initTranslations('gnome-shell-extension-panel-osd');
+}
 
 let Settings;
+let SettingsC;
+
+let showTestNotificationTimeout;
 
 let loadConfig = function() {
     Settings = Convenience.getSettings(PANEL_OSD_SETTINGS_SCHEMA);
+    SettingsC = Settings.connect("changed", function() {
+        if (getTestNotification()) {
+            if (showTestNotificationTimeout !== undefined)
+                Mainloop.source_remove(showTestNotificationTimeout);
+            showTestNotificationTimeout = Mainloop.timeout_add(getTestDelay(), Lang.bind(this, function() {
+                Main.notify("Panel OSD", _("This is just a multiline test-message to show where the notification will be placed and to test expansion (showing details)."));
+                return false;
+            }));
+            setTestNotification(false);
+        }
+    });
 };
 
 let getX_position = function() {
@@ -80,13 +98,35 @@ let getX_position = function() {
     return Settings.get_double(PANEL_OSD_X_POS_KEY);
 };
 
-let gety_position = function() {
+let getY_position = function() {
     if (!Settings)
         loadConfig();
     return Settings.get_double(PANEL_OSD_Y_POS_KEY);
 };
 
+let getForce_expand = function() {
+    if (!Settings)
+        loadConfig();
+    return Settings.get_boolean(PANEL_OSD_FORCE_EXPAND);
+};
 
+let getTestDelay = function() {
+    if (!Settings)
+        loadConfig();
+    return Math.floor(1000 * Settings.get_double(PANEL_OSD_TEST_DELAY));
+};
+
+let getTestNotification = function() {
+    if (!Settings)
+        loadConfig();
+    return Settings.get_boolean(PANEL_OSD_TEST_NOTIFICATION);
+};
+
+let setTestNotification = function(v) {
+    if (!Settings)
+        loadConfig();
+    Settings.set_boolean(PANEL_OSD_TEST_NOTIFICATION, v);
+};
 /*
  *  Copied from MessageTray._showNotification()
  *
@@ -124,7 +164,7 @@ let extensionShowNotification = function() {
     let yTop = -global.screen_height;
     let yBottom = 0;
 
-    this._notificationWidget.y = (yTop - yBottom) * gety_position() / 100 + yBottom;
+    this._notificationWidget.y = (yTop - yBottom) * getY_position() / 100 + yBottom;
     // JRL changes end
 
 
@@ -182,7 +222,7 @@ let extensionHideNotification = function(animate) {
     }
     // JRL changes begin
     let yPos;
-    if (gety_position() < 50)
+    if (getY_position() < 50)
         yPos = this.actor.height;
     else
         yPos = -global.screen_height;
@@ -306,9 +346,9 @@ let extensionUpdateShowingNotification = function() {
     this._notification._table.remove_style_class_name('jrlnotification');
     this._notification._table.remove_style_class_name('jrlnotification_top');
     this._notification._table.remove_style_class_name('jrlnotification_bottom');
-    if (gety_position() <= 0.1)
+    if (getY_position() <= 0.1)
         this._notification._table.add_style_class_name('jrlnotification_bottom');
-    else if (gety_position() >= 99.9)
+    else if (getY_position() >= 99.9)
         this._notification._table.add_style_class_name('jrlnotification_top');
     else
         this._notification._table.add_style_class_name('jrlnotification');
@@ -317,7 +357,11 @@ let extensionUpdateShowingNotification = function() {
     this._notification.acknowledged = true;
     if (ExtensionUtils.versionCheck(['3.6'], Config.PACKAGE_VERSION)) {
         // We auto-expand notifications with CRITICAL urgency.
-        if (this._notification.urgency == Urgency.CRITICAL)
+        // JRL changes begin
+        //        if (this._notification.urgency == Urgency.CRITICAL)
+        if (this._notification.urgency == Urgency.CRITICAL ||
+            getForce_expand())
+        // JRL changes end
             this._expandNotification(true);
     }
     else
@@ -326,6 +370,9 @@ let extensionUpdateShowingNotification = function() {
         // We auto-expand notifications with CRITICAL urgency, or for which the relevant setting
         // is on in the control center.
         if (this._notification.urgency == Urgency.CRITICAL ||
+            // JRL changes begin
+            getForce_expand() ||
+            // JRL changes end
             this._notification.source.policy.forceExpanded)
             this._expandNotification(true);
     }
@@ -341,7 +388,7 @@ let extensionUpdateShowingNotification = function() {
         yTop = -global.screen_height;
     let yBottom = -this._notificationWidget.height;
 
-    let yPos = (yTop - yBottom) * gety_position() / 100 + yBottom;
+    let yPos = (yTop - yBottom) * getY_position() / 100 + yBottom;
     //
     this._notificationWidget.x = (global.screen_width - this._notificationWidget.width) * (getX_position() - 50) / 50;
     // JRL changes end
@@ -386,7 +433,7 @@ let extensiononNotificationExpanded = function() {
         yTop = -global.screen_height;
     let yBottom = -this._notificationWidget.height;
 
-    let expandedY = (yTop - yBottom) * gety_position() / 100 + yBottom;
+    let expandedY = (yTop - yBottom) * getY_position() / 100 + yBottom;
     // JRL changes end
     this._closeButton.show();
 
@@ -414,6 +461,7 @@ function enable() {
     Main.messageTray._hideNotification = extensionHideNotification;
     Main.messageTray._updateShowingNotification = extensionUpdateShowingNotification;
     Main.messageTray._onNotificationExpanded = extensiononNotificationExpanded;
+    loadConfig();
 }
 
 
@@ -421,6 +469,14 @@ function enable() {
  *  Put everything back.
  */
 function disable() {
+    if (SettingsC) {
+        Settings.disconnect(SettingsC);
+        SettingsC = undefined;
+    }
+
+    if (showTestNotificationTimeout !== undefined)
+        Mainloop.source_remove(showTestNotificationTimeout);
+
     // remove our style, in case we just show a notification, otherwise the radius is drawn incorrect
     if (Main.messageTray._notification) {
         Main.messageTray._notification._table.remove_style_class_name('jrlnotification');
