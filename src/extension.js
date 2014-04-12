@@ -161,7 +161,7 @@ let extensionShowNotification = function() {
     this._notificationWidget.opacity = 0;
     // JRL changes begin
     //this._notificationWidget.y = 0;
-    let yTop = -global.screen_height;
+    let yTop = -(Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
     let yBottom = 0;
 
     this._notificationWidget.y = (yTop - yBottom) * getY_position() / 100 + yBottom;
@@ -225,7 +225,7 @@ let extensionHideNotification = function(animate) {
     if (getY_position() < 50)
         yPos = this.actor.height;
     else
-        yPos = -global.screen_height;
+        yPos = -(Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
     // JRL changes end
     if (ExtensionUtils.versionCheck(['3.6'], Config.PACKAGE_VERSION)) {
 
@@ -383,14 +383,16 @@ let extensionUpdateShowingNotification = function() {
     // top bar.
     // "hide top panel" keeps the height and just moves the panel out of the visible area, so using
     // the panels-height is not enough.
-    let yTop = panel.y + panel.height - global.screen_height;
-    if (yTop < (-global.screen_height))
-        yTop = -global.screen_height;
+    let yTop = -(Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
+    if (Main.layoutManager.bottomMonitor == Main.layoutManager.primaryMonitor)
+        yTop += (panel.y + panel.height);
+    if (yTop < (-Main.layoutManager.bottomMonitor.height))
+        yTop = -Main.layoutManager.bottomMonitor.height;
     let yBottom = -this._notificationWidget.height;
 
     let yPos = (yTop - yBottom) * getY_position() / 100 + yBottom;
     //
-    this._notificationWidget.x = (global.screen_width - this._notificationWidget.width) * (getX_position() - 50) / 50;
+    this._notificationWidget.x = (Main.layoutManager.bottomMonitor.width - this._notificationWidget.width) * (getX_position() - 50) / 50;
     // JRL changes end
     // We tween all notifications to full opacity. This ensures that both new notifications and
     // notifications that might have been in the process of hiding get full opacity.
@@ -428,9 +430,11 @@ let extensionUpdateShowingNotification = function() {
 let extensiononNotificationExpanded = function() {
     // JRL changes begin
     //let expandedY = - this._notificationWidget.height;
-    let yTop = panel.y + panel.height - global.screen_height;
-    if (yTop < (-global.screen_height))
-        yTop = -global.screen_height;
+    let yTop = -(Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
+    if (Main.layoutManager.bottomMonitor == Main.layoutManager.primaryMonitor)
+        yTop += (panel.y + panel.height);
+    if (yTop < (-Main.layoutManager.bottomMonitor.height))
+        yTop = -Main.layoutManager.bottomMonitor.height;
     let yBottom = -this._notificationWidget.height;
 
     let expandedY = (yTop - yBottom) * getY_position() / 100 + yBottom;
