@@ -7,7 +7,7 @@ uuid = panel-osd@berend.de.schouwer.gmail.com
 
 extensiondir = $(topextensiondir)/$(uuid)
 
-dist_extension_DATA = stylesheet.css panel-osd-settings.ui
+dist_extension_DATA = panel-osd-settings.ui
 
 nodist_extension_DATA = metadata.json $(EXTRA_EXTENSION)
 
