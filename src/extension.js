@@ -21,6 +21,7 @@ const Lang = imports.lang;
 const Mainloop = imports.mainloop;
 const Me = ExtensionUtils.getCurrentExtension();
 const Convenience = Me.imports.convenience;
+const St = imports.gi.St;
 
 const Gettext = imports.gettext.domain('gnome-shell-extension-panel-osd');
 const _ = Gettext.gettext;
@@ -342,17 +343,26 @@ let extensionHideNotification = function(animate) {
  */
 let extensionUpdateShowingNotification = function() {
     // JRL changes begin
-    // add own class-name to change border-radius, otherwise the changed value remains after switching off the extension
-    this._notification._table.remove_style_class_name('jrlnotification');
-    this._notification._table.remove_style_class_name('jrlnotification_top');
-    this._notification._table.remove_style_class_name('jrlnotification_bottom');
-    if (getY_position() <= 0.1)
-        this._notification._table.add_style_class_name('jrlnotification_bottom');
-    else if (getY_position() >= 99.9)
-        this._notification._table.add_style_class_name('jrlnotification_top');
-    else
-        this._notification._table.add_style_class_name('jrlnotification');
-
+    // first reset the border-radius to the default
+    this._notification._table.set_style('border-radius:;');
+    if (getY_position() > 0.1)
+    {
+        // fix the border-radiuses, depending on the position
+        let tl, tr;
+        let bl = this._notification._table.get_theme_node().get_border_radius(St.Corner.TOPLEFT);
+        let br = this._notification._table.get_theme_node().get_border_radius(St.Corner.TOPRIGHT);
+        if (getY_position() >= 99.9)
+        {
+            tl = this._notification._table.get_theme_node().get_border_radius(St.Corner.BOTTOMLEFT);
+            tr = this._notification._table.get_theme_node().get_border_radius(St.Corner.BOTTOMRIGHT);
+        }
+        else
+        {
+            tl = bl;
+            tr = br;
+        }
+        this._notification._table.set_style(_('border-radius: %dpx %dpx %dpx %dpx;').format(tl, tr, bl, br));
+    }
     // JRL changes end
     this._notification.acknowledged = true;
     if (ExtensionUtils.versionCheck(['3.6'], Config.PACKAGE_VERSION)) {
@@ -481,12 +491,9 @@ function disable() {
     if (showTestNotificationTimeout !== undefined)
         Mainloop.source_remove(showTestNotificationTimeout);
 
-    // remove our style, in case we just show a notification, otherwise the radius is drawn incorrect
-    if (Main.messageTray._notification) {
-        Main.messageTray._notification._table.remove_style_class_name('jrlnotification');
-        Main.messageTray._notification._table.remove_style_class_name('jrlnotification_top');
-        Main.messageTray._notification._table.remove_style_class_name('jrlnotification_bottom');
-    }
+    // remove our (inline-)style, in case we just show a notification, otherwise the radius is drawn incorrect
+    if (Main.messageTray._notification)
+        Main.messageTray._notification.set_style('border-radius:;');
     // reset x-position
     notificationWidget.x = originalNotificationWidgetX;
     Main.messageTray._showNotification = originalShowNotification;
