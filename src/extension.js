@@ -186,6 +186,9 @@ let extensionShowNotification = function() {
     // the mouse is moving towards it or within it.
     this._lastSeenMouseX = x;
     this._lastSeenMouseY = y;
+    if (ExtensionUtils.versionCheck(['3.14'], Config.PACKAGE_VERSION)) {
+        this._resetNotificationLeftTimeout();
+    }
 };
 
 
@@ -299,11 +302,17 @@ let extensionHideNotification = function(animate) {
         }
         else
         {
-            if (this._notificationLeftTimeoutId) {
-                Mainloop.source_remove(this._notificationLeftTimeoutId);
-                this._notificationLeftTimeoutId = 0;
-                this._notificationLeftMouseX = -1;
-                this._notificationLeftMouseY = -1;
+            if (ExtensionUtils.versionCheck(['3.14'], Config.PACKAGE_VERSION)) {
+                this._resetNotificationLeftTimeout();
+            }
+            else
+            {
+                if (this._notificationLeftTimeoutId) {
+                    Mainloop.source_remove(this._notificationLeftTimeoutId);
+                    this._notificationLeftTimeoutId = 0;
+                    this._notificationLeftMouseX = -1;
+                    this._notificationLeftMouseY = -1;
+                }
             }
 
             if (animate) {
@@ -458,12 +467,28 @@ let extensiononNotificationExpanded = function() {
     } else if (this._notification.y != expandedY) {
         // Tween also opacity here, to override a possible tween that's
         // currently hiding the notification.
-        this._tween(this._notificationWidget, '_notificationState', State.SHOWN,
-                    { y: expandedY,
-                      opacity: 255,
-                      time: ANIMATION_TIME,
-                      transition: 'easeOutQuad'
-                    });
+        if (ExtensionUtils.versionCheck(['3.14'], Config.PACKAGE_VERSION)) {
+            Tweener.addTween(this._notificationWidget,
+                             { y: expandedY,
+                               opacity: 255,
+                               time: ANIMATION_TIME,
+                               transition: 'easeOutQuad',
+                               // HACK: Drive the state machine here better,
+                               // instead of overwriting tweens
+                               onComplete: Lang.bind(this, function() {
+                                   this._notificationState = State.SHOWN;
+                               }),
+                             });
+        }
+        else
+        {
+            this._tween(this._notificationWidget, '_notificationState', State.SHOWN,
+                        { y: expandedY,
+                          opacity: 255,
+                          time: ANIMATION_TIME,
+                          transition: 'easeOutQuad'
+                        });
+        }
     }
 };
 
