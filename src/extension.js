@@ -37,18 +37,18 @@ const PANEL_OSD_TEST_NOTIFICATION = 'test-notification';
  *  Save MessageTray's original methods.  We're going to change these
  *  in our extension to move the OSD.
  */
-let originalExpandMethod = Main.messageTray._onNotificationExpanded;
-let originalShowNotification = Main.messageTray._showNotification;
-let originalUpdateShowingNotification = Main.messageTray._updateShowingNotification;
-let originalHideNotification = Main.messageTray._hideNotification;
+let originalExpandMethod;
+let originalShowNotification;
+let originalUpdateShowingNotification;
+let originalHideNotification;
 
 /*
  *  The widget we're interested in
  */
-let notificationWidget = Main.messageTray._notificationWidget;
-let panel = Main.layoutManager.panelBox;
+let notificationWidget;
+let panel;
 
-let originalNotificationWidgetX = notificationWidget.x;
+let originalNotificationWidgetX;
 
 /*
  *  We need these constants to call Tween with values consistent to the
@@ -84,6 +84,7 @@ let loadConfig = function() {
         if (getTestNotification()) {
             if (showTestNotificationTimeout !== undefined)
                 Mainloop.source_remove(showTestNotificationTimeout);
+
             showTestNotificationTimeout = Mainloop.timeout_add(getTestDelay(), Lang.bind(this, function() {
                 Main.notify("Panel OSD", _("This is just a multiline test-message to show where the notification will be placed and to test expansion (showing details)."));
                 return false;
@@ -137,39 +138,59 @@ let setTestNotification = function(v) {
  */
 let extensionShowNotification = function() {
     this._notification = this._notificationQueue.shift();
+    if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+        this.emit('queue-changed');
+    }
 
     this._userActiveWhileNotificationShown = this.idleMonitor.get_idletime() <= IDLE_TIME;
-    if (ExtensionUtils.versionCheck(['3.6'], Config.PACKAGE_VERSION)) {
-        this._idleMonitorWatchId = this.idleMonitor.add_watch(IDLE_TIME,
-                                                              Lang.bind(this, this._onIdleMonitorWatch));
+    if (!this._userActiveWhileNotificationShown) {
+        // If the user isn't active, set up a watch to let us know
+        // when the user becomes active.
+        this.idleMonitor.add_user_active_watch(Lang.bind(this, this._onIdleMonitorBecameActive));
     }
-    else
+
+    if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+        this._banner = this._notification.createBanner();
+        this._bannerClickedId = this._banner.connect('done-displaying',
+                                                     Lang.bind(this, this._escapeTray));
+        this._bannerUnfocusedId = this._banner.connect('unfocused', Lang.bind(this, function() {
+            this._updateState();
+        }));
+
+        this._bannerBin.add_actor(this._banner.actor);
+
+        this._bannerBin._opacity = 0;
+        this._bannerBin.opacity = 0;
+
+        let yTop = (Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
+
+        let yBottom = this._banner.actor.height;
+
+        this._bannerBin.y = -(yTop - yBottom) * getY_position() / 100 + yBottom;
+        this._bannerBin.y = -this._banner.actor.height;
+
+        this.actor.show();
+    } else
     {
-        if (!this._userActiveWhileNotificationShown) {
-            // If the user isn't active, set up a watch to let us know
-            // when the user becomes active.
-            this.idleMonitor.add_user_active_watch(Lang.bind(this, this._onIdleMonitorBecameActive));
-        }
+        this._notificationClickedId = this._notification.connect('done-displaying',
+                                                                 Lang.bind(this, this._escapeTray));
+        this._notificationUnfocusedId = this._notification.connect('unfocused', Lang.bind(this, function() {
+            this._updateState();
+        }));
+        this._notificationBin.child = this._notification.actor;
+
+        this._notificationWidget.opacity = 0;
+        // JRL changes begin
+        //this._notificationWidget.y = 0;
+        let yTop = -(Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
+        let yBottom = 0;
+
+        this._notificationWidget.y = (yTop - yBottom) * getY_position() / 100 + yBottom;
+        // JRL changes end
+
+
+        this._notificationWidget.show();
     }
-
-    this._notificationClickedId = this._notification.connect('done-displaying',
-                                                             Lang.bind(this, this._escapeTray));
-    this._notificationUnfocusedId = this._notification.connect('unfocused', Lang.bind(this, function() {
-        this._updateState();
-    }));
-    this._notificationBin.child = this._notification.actor;
-
-    this._notificationWidget.opacity = 0;
-    // JRL changes begin
-    //this._notificationWidget.y = 0;
-    let yTop = -(Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
-    let yBottom = 0;
-
-    this._notificationWidget.y = (yTop - yBottom) * getY_position() / 100 + yBottom;
-    // JRL changes end
-
-
-    this._notificationWidget.show();
 
     this._updateShowingNotification();
 
@@ -186,7 +207,7 @@ let extensionShowNotification = function() {
     // the mouse is moving towards it or within it.
     this._lastSeenMouseX = x;
     this._lastSeenMouseY = y;
-    if (ExtensionUtils.versionCheck(['3.14'], Config.PACKAGE_VERSION)) {
+    if (ExtensionUtils.versionCheck(['3.14','3.16'], Config.PACKAGE_VERSION)) {
         this._resetNotificationLeftTimeout();
     }
 };
@@ -200,64 +221,36 @@ let extensionShowNotification = function() {
  *  entire screen.
  */
 let extensionHideNotification = function(animate) {
-    if (ExtensionUtils.versionCheck(['3.6', '3.8'], Config.PACKAGE_VERSION)) {
-        // HACK!
-        // There seems to be a reentrancy issue in calling .ungrab() here,
-        // which causes _updateState to be called before _notificationState
-        // becomes HIDING. That hides the notification again, nullifying the
-        // object but not setting _notificationState (and that's the weird part)
-        // As then _notificationState is stuck into SHOWN but _notification
-        // is null, every new _updateState fails and the message tray is
-        // lost forever.
-        //
-        // See more at https://bugzilla.gnome.org/show_bug.cgi?id=683986
-        this._notificationState = State.HIDING;
+    this._notificationFocusGrabber.ungrabFocus();
 
-        this._grabHelper.ungrab({ actor: this._notification.actor });
-    }
-    else
-    {
-        this._notificationFocusGrabber.ungrabFocus();
-    }
-
-    if (this._notificationExpandedId) {
-        this._notification.disconnect(this._notificationExpandedId);
-        this._notificationExpandedId = 0;
-    }
-    // JRL changes begin
     let yPos;
-    if (getY_position() < 50)
-        yPos = this.actor.height;
-    else
-        yPos = -(Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
-    // JRL changes end
-    if (ExtensionUtils.versionCheck(['3.6'], Config.PACKAGE_VERSION)) {
+    if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+        if (getY_position() < 50)
+            yPos = Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height;
+        else
+            yPos = -this._bannerBin.height;
 
-        if (this._notificationRemoved) {
-            // JRL changes begin
-            //this._notificationWidget.y = this.actor.height;
-            this._notificationWidget.y = yPos;
-            // JRL changes end
-            this._notificationWidget.opacity = 0;
-            this._notificationState = State.HIDDEN;
-            this._hideNotificationCompleted();
-        } else {
-            this._tween(this._notificationWidget, '_notificationState', State.HIDDEN,
-                        // JRL changes begin
-                        //{ y: this.actor.height,
-                        { y: yPos,
-                        // JRL changes end
-                          opacity: 0,
-                          time: ANIMATION_TIME,
-                          transition: 'easeOutQuad',
-                          onComplete: this._hideNotificationCompleted,
-                          onCompleteScope: this
-                        });
-
+        if (this._bannerClickedId) {
+            this._banner.disconnect(this._bannerClickedId);
+            this._bannerClickedId = 0;
         }
-    }
-    else
+        if (this._bannerUnfocusedId) {
+            this._banner.disconnect(this._bannerUnfocusedId);
+            this._bannerUnfocusedId = 0;
+        }
+
+    }else
     {
+        if (this._notificationExpandedId) {
+            this._notification.disconnect(this._notificationExpandedId);
+            this._notificationExpandedId = 0;
+        }
+        // JRL changes begin
+        if (getY_position() < 50)
+            yPos = this.actor.height;
+        else
+            yPos = -(Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
+        // JRL changes end
         if (this._notificationClickedId) {
             this._notification.disconnect(this._notificationClickedId);
             this._notificationClickedId = 0;
@@ -266,78 +259,51 @@ let extensionHideNotification = function(animate) {
             this._notification.disconnect(this._notificationUnfocusedId);
             this._notificationUnfocusedId = 0;
         }
+    }
 
-        if (ExtensionUtils.versionCheck(['3.8'], Config.PACKAGE_VERSION)) {
-            this._useLongerTrayLeftTimeout = false;
-            if (this._trayLeftTimeoutId) {
-                Mainloop.source_remove(this._trayLeftTimeoutId);
-                this._trayLeftTimeoutId = 0;
-                this._trayLeftMouseX = -1;
-                this._trayLeftMouseY = -1;
-            }
-
-            if (this._notificationRemoved) {
-                Tweener.removeTweens(this._notificationWidget);
-                // JRL changes begin
-                //this._notificationWidget.y = this.actor.height;
-                this._notificationWidget.y = yPos;
-                // JRL changes end
-                this._notificationWidget.opacity = 0;
-                this._notificationState = State.HIDDEN;
-                this._hideNotificationCompleted();
-            } else {
-                this._tween(this._notificationWidget, '_notificationState', State.HIDDEN,
-                            // JRL changes begin
-                            //{ y: this.actor.height,
-                            { y: yPos,
-                            // JRL changes end
-                              opacity: 0,
-                              time: ANIMATION_TIME,
-                              transition: 'easeOutQuad',
-                              onComplete: this._hideNotificationCompleted,
-                              onCompleteScope: this
-                            });
-
-            }
+    if (ExtensionUtils.versionCheck(['3.14','3.16'], Config.PACKAGE_VERSION)) {
+        this._resetNotificationLeftTimeout();
+    }
+    else
+    {
+        if (this._notificationLeftTimeoutId) {
+            Mainloop.source_remove(this._notificationLeftTimeoutId);
+            this._notificationLeftTimeoutId = 0;
+            this._notificationLeftMouseX = -1;
+            this._notificationLeftMouseY = -1;
         }
-        else
-        {
-            if (ExtensionUtils.versionCheck(['3.14'], Config.PACKAGE_VERSION)) {
-                this._resetNotificationLeftTimeout();
-            }
-            else
-            {
-                if (this._notificationLeftTimeoutId) {
-                    Mainloop.source_remove(this._notificationLeftTimeoutId);
-                    this._notificationLeftTimeoutId = 0;
-                    this._notificationLeftMouseX = -1;
-                    this._notificationLeftMouseY = -1;
-                }
-            }
+    }
 
-            if (animate) {
-                this._tween(this._notificationWidget, '_notificationState', State.HIDDEN,
-                            // JRL changes begin
-                            //{ y: this.actor.height,
-                            { y: yPos,
-                            // JRL changes end
-                              opacity: 0,
-                              time: ANIMATION_TIME,
-                              transition: 'easeOutQuad',
-                              onComplete: this._hideNotificationCompleted,
-                              onCompleteScope: this
-                            });
-            } else {
-                Tweener.removeTweens(this._notificationWidget);
-                // JRL changes begin
-                //this._notificationWidget.y = this.actor.height;
-                this._notificationWidget.y = yPos;
-                // JRL changes end
-                this._notificationWidget.opacity = 0;
-                this._notificationState = State.HIDDEN;
-                this._hideNotificationCompleted();
-            }
-        }
+    // JRL changes begin
+    let theNotification;
+    if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+        theNotification = this._bannerBin;
+    }else
+    {
+        theNotification =this._notificationWidget;
+    }
+   // JRL changes end
+
+
+    if (animate) {
+        // JRL changes begin
+        this._tween(theNotification, '_notificationState', State.HIDDEN,
+                    { y: yPos,
+                    // JRL changes end
+                      opacity: 0,
+                      time: ANIMATION_TIME,
+                      transition: 'easeOutQuad',
+                      onComplete: this._hideNotificationCompleted,
+                      onCompleteScope: this
+                    });
+    } else {
+        // JRL changes begin
+        Tweener.removeTweens(theNotification);
+        theNotification.y = yPos;
+        theNotification.opacity = 0;
+        // JRL changes end
+        this._notificationState = State.HIDDEN;
+        this._hideNotificationCompleted();
     }
 };
 
@@ -353,65 +319,84 @@ let extensionHideNotification = function(animate) {
 let extensionUpdateShowingNotification = function() {
     // JRL changes begin
     // first reset the border-radius to the default
-    this._notification._table.set_style('border-radius:;');
-    if (getY_position() > 0.1)
-    {
-        // fix the border-radiuses, depending on the position
-        let tl, tr;
-        let bl = this._notification._table.get_theme_node().get_border_radius(St.Corner.TOPLEFT);
-        let br = this._notification._table.get_theme_node().get_border_radius(St.Corner.TOPRIGHT);
-        if (getY_position() >= 99.9)
+    if (!ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+        this._notification._table.set_style('border-radius:;');
+        if (getY_position() > 0.1)
         {
-            tl = this._notification._table.get_theme_node().get_border_radius(St.Corner.BOTTOMLEFT);
-            tr = this._notification._table.get_theme_node().get_border_radius(St.Corner.BOTTOMRIGHT);
+            // fix the border-radiuses, depending on the position
+            let tl, tr;
+            let bl = this._notification._table.get_theme_node().get_border_radius(St.Corner.TOPLEFT);
+            let br = this._notification._table.get_theme_node().get_border_radius(St.Corner.TOPRIGHT);
+            if (getY_position() >= 99.9)
+            {
+                tl = this._notification._table.get_theme_node().get_border_radius(St.Corner.BOTTOMLEFT);
+                tr = this._notification._table.get_theme_node().get_border_radius(St.Corner.BOTTOMRIGHT);
+            }
+            else
+            {
+                tl = bl;
+                tr = br;
+            }
+            this._notification._table.set_style(_('border-radius: %dpx %dpx %dpx %dpx;').format(tl, tr, bl, br));
         }
-        else
-        {
-            tl = bl;
-            tr = br;
-        }
-        this._notification._table.set_style(_('border-radius: %dpx %dpx %dpx %dpx;').format(tl, tr, bl, br));
     }
     // JRL changes end
     this._notification.acknowledged = true;
-    if (ExtensionUtils.versionCheck(['3.6'], Config.PACKAGE_VERSION)) {
-        // We auto-expand notifications with CRITICAL urgency.
+    this._notification.playSound();
+    // We auto-expand notifications with CRITICAL urgency, or for which the relevant setting
+    // is on in the control center.
+    if (this._notification.urgency == Urgency.CRITICAL ||
         // JRL changes begin
-        //        if (this._notification.urgency == Urgency.CRITICAL)
-        if (this._notification.urgency == Urgency.CRITICAL ||
-            getForce_expand())
+        getForce_expand() ||
         // JRL changes end
-            this._expandNotification(true);
-    }
-    else
-    {
-        this._notification.playSound();
-        // We auto-expand notifications with CRITICAL urgency, or for which the relevant setting
-        // is on in the control center.
-        if (this._notification.urgency == Urgency.CRITICAL ||
-            // JRL changes begin
-            getForce_expand() ||
-            // JRL changes end
-            this._notification.source.policy.forceExpanded)
-            this._expandNotification(true);
-    }
+        this._notification.source.policy.forceExpanded)
+        {
+            if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION))
+                this._expandBanner(true);
+            else
+                this._expandNotification(true);
+        }
+
 
     // JRL changes begin
+    let theNotification;
+    if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+        theNotification = this._bannerBin;
+    }else
+    {
+        theNotification =this._notificationWidget;
+    }
     // use panel's y and height property to determine the bottom of the top-panel.
     // needed because the "hide top bar" and "hide top panel" use different approaches to hide the
     // top bar.
     // "hide top panel" keeps the height and just moves the panel out of the visible area, so using
     // the panels-height is not enough.
-    let yTop = -(Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
-    if (Main.layoutManager.bottomMonitor == Main.layoutManager.primaryMonitor)
-        yTop += (panel.y + panel.height);
-    if (yTop < (-Main.layoutManager.bottomMonitor.height))
-        yTop = -Main.layoutManager.bottomMonitor.height;
-    let yBottom = -this._notificationWidget.height;
+    let yPos;
+    if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+        let yTop = Main.layoutManager.bottomMonitor.y
 
-    let yPos = (yTop - yBottom) * getY_position() / 100 + yBottom;
-    //
-    this._notificationWidget.x = (Main.layoutManager.bottomMonitor.width - this._notificationWidget.width) * (getX_position() - 50) / 50;
+        if (Main.layoutManager.bottomMonitor == Main.layoutManager.primaryMonitor)
+            yTop += (panel.y + panel.height);
+
+        let yBottom = theNotification.height;
+
+        yPos = (Main.layoutManager.bottomMonitor.height - yTop - yBottom) * (100-getY_position()) / 100;
+
+        if (yPos > (Main.layoutManager.bottomMonitor.height - theNotification.height))
+            yPos = Main.layoutManager.bottomMonitor.height - theNotification.height;
+    }else
+    {
+        let yTop = -(Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
+        if (Main.layoutManager.bottomMonitor == Main.layoutManager.primaryMonitor)
+            yTop += (panel.y + panel.height);
+        if (yTop < (-Main.layoutManager.bottomMonitor.height))
+            yTop = -Main.layoutManager.bottomMonitor.height;
+        let yBottom = -theNotification.height;
+
+        yPos = (yTop - yBottom) * getY_position() / 100 + yBottom;
+        //
+    }
+    theNotification.x = (Main.layoutManager.bottomMonitor.width - theNotification.width) * (getX_position() - 50) / 50;
     // JRL changes end
     // We tween all notifications to full opacity. This ensures that both new notifications and
     // notifications that might have been in the process of hiding get full opacity.
@@ -424,18 +409,31 @@ let extensionUpdateShowingNotification = function() {
     // We use this._showNotificationCompleted() onComplete callback to extend the time the updated
     // notification is being shown.
 
-    let tweenParams = { opacity: 255,
-                        // JRL changes begin
-                        //y: -this._notificationWidget.height,
-                        y: yPos,
-                        // JRL changes end
-                        time: ANIMATION_TIME,
-                        transition: 'easeOutQuad',
-                        onComplete: this._showNotificationCompleted,
-                        onCompleteScope: this
-                      };
+    let tweenParams;
+    if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+        tweenParams = { _opacity: 255,
+                            y: yPos,
+                            time: ANIMATION_TIME,
+                            transition: 'easeOutBack',
+                            onUpdate: this._clampOpacity,
+                            onUpdateScope: this,
+                            onComplete: this._showNotificationCompleted,
+                            onCompleteScope: this
+                          };
+    }else
+    {
+        tweenParams = { opacity: 255,
+                            // JRL changes begin
+                            y: yPos,
+                            // JRL changes end
+                            time: ANIMATION_TIME,
+                            transition: 'easeOutQuad',
+                            onComplete: this._showNotificationCompleted,
+                            onCompleteScope: this
+                          };
+    }
 
-    this._tween(this._notificationWidget, '_notificationState', State.SHOWN, tweenParams);
+    this._tween(theNotification, '_notificationState', State.SHOWN, tweenParams);
 };
 
 /*
@@ -496,6 +494,23 @@ let extensiononNotificationExpanded = function() {
  *  Overload the methods.
  */
 function enable() {
+    if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+        notificationWidget = Main.messageTray._bannerBin;
+    }else
+    {
+        notificationWidget = Main.messageTray._notificationWidget;
+        originalExpandMethod = Main.messageTray._onNotificationExpanded;
+    }
+    originalShowNotification = Main.messageTray._showNotification;
+    originalUpdateShowingNotification = Main.messageTray._updateShowingNotification;
+    originalHideNotification = Main.messageTray._hideNotification;
+    panel = Main.layoutManager.panelBox;
+
+    originalNotificationWidgetX = notificationWidget.x;
+
+
+
+
     Main.messageTray._showNotification = extensionShowNotification;
     Main.messageTray._hideNotification = extensionHideNotification;
     Main.messageTray._updateShowingNotification = extensionUpdateShowingNotification;
@@ -524,5 +539,7 @@ function disable() {
     Main.messageTray._showNotification = originalShowNotification;
     Main.messageTray._hideNotification = originalHideNotification;
     Main.messageTray._updateShowingNotification = originalUpdateShowingNotification;
-    Main.messageTray._onNotificationExpanded = originalExpandMethod;
+    if (!ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+        Main.messageTray._onNotificationExpanded = originalExpandMethod;
+    }
 }
