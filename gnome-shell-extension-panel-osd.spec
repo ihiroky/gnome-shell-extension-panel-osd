@@ -9,7 +9,9 @@ Release:        0.0.%(date +%Y%m%d).%{checkout}%{?dist}
 Summary:        An extension to configure the place where notifications are shown
 
 Group:          User Interface/Desktops
-License:        GPLv3+
+
+# The entire source code is GPLv3+ except convenience.js, which is BSD
+License:        GPLv3+ and BSD
 URL:            https://github.com/jenslody/gnome-shell-extension-panel-osd
 Source0:        https://github.com/jenslody/gnome-shell-extension-panel-osd/tarball/master/%{github}-%{git}.tar.gz
 BuildArch:      noarch
@@ -22,8 +24,6 @@ Requires:       gnome-shell >= 3.10.0
 gnome-shell-extension-panel-osd is an extension to show the notification
 messages at any (configurable) place on the (primary) monitor.
 
-%license COPYING
-
 %prep
 %setup -q -n %{github}-%{git}
 
@@ -34,7 +34,7 @@ make %{?_smp_mflags}
 
 %install
 make install DESTDIR=%{buildroot}
-%find_lang %{name}
+%find_lang %{uuid}
 
 %postun
 if [ $1 -eq 0 ] ; then
@@ -44,7 +44,8 @@ fi
 %posttrans
 %{_bindir}/glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 
-%files -f %{name}.lang
+%files -f %{uuid}.lang
+%license COPYING
 %doc AUTHORS README.md
 %{_datadir}/glib-2.0/schemas/org.gnome.shell.extensions.panel-osd.gschema.xml
 %{_datadir}/gnome-shell/extensions/%{uuid}/
