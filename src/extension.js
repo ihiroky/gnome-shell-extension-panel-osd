@@ -1,17 +1,41 @@
 /* jshint esnext:true */
 /*
+ *
+ *  GNOME Shell Extension Panel OSD
+ *
+ * Copyright (C) 2014 - 2015
+ *     Jens Lody <jens@jenslody.de>,
+
  *  Idea: Grab MessageTray OSD widget, and give it new .x and .y co-ordinates.
  *
  *  We're grabbing "private" methods (start with _), so expect this to break
  *  with different versions of Gnome Shell.
  *
- *  It was tested with 3.6 to 3.11.90 with various themes.
+ *  It was tested with 3.10 to 3.17.4 with various themes.
  *
  *  Most of this code is a direct copy from gnome-shell/js/ui/messageTray.js,
- *  so (C)opyright Gnome-Team, I think :)
+ *  which is released under GPLv2+.
  *
  *  The idea comes from 'Shell OSD' gnome-shell extension by
  *  mpnordland@gmail.com
+ *
+ * This file is part of gnome-shell-extension-panel-osd.
+ *
+ * gnome-shell-extension-panel-osd is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * gnome-shell-extension-panel-osd is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with gnome-shell-extension-panel-osd.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+/*
  */
 const ExtensionUtils = imports.misc.extensionUtils;
 const Config = imports.misc.config;

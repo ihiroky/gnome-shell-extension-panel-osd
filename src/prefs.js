@@ -1,4 +1,28 @@
 /* jshint esnext:true */
+/*
+ *
+ *  GNOME Shell Extension Panel OSD preferences
+ *  - Creates a widget to set the preferences of the weather extension
+ *
+ * Copyright (C) 2014 - 2015
+ *     Jens Lody <jens@jenslody.de>,
+ *
+ * This file is part of gnome-shell-extension-panel-osd.
+ *
+ * gnome-shell-extension-panel-osd is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * gnome-shell-extension-panel-osd is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with gnome-shell-extension-panel-osd.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 const Gtk = imports.gi.Gtk;
 const GObject = imports.gi.GObject;
 const GtkBuilder = Gtk.Builder;
