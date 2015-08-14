@@ -1,15 +1,40 @@
 #!/bin/sh
+#
+#
+#  GNOME Shell Extension Panel OSD
+#  - generate SPEC-,SOURCES- and SRPM-files from latest git-master and move them
+#    into the appropriate directories
+#  - you need to check the paths and fix the maintainers name
+#
+# Copyright (C) 2012 - 2015
+#     Jens Lody <jens@jenslody.de>,
+#
+# This file is part of gnome-shell-extension-panel-osd.
+#
+# gnome-shell-extension-panel-osd is free software: you can
+# redistribute it and/or modify it under the terms of the GNU
+# General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or (at your option)
+# any later version.
+#
+# gnome-shell-extension-panel-osd is distributed in the hope that it
+# will be useful, but WITHOUT ANY WARRANTY; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+# PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with gnome-shell-extension-panel-osd.  If not, see
+# <http://www.gnu.org/licenses/>.
+#
 
 GITHUB="jenslody-gnome-shell-extension-panel-osd"
 BASE_URL="https://github.com/jenslody/gnome-shell-extension-panel-osd/tarball/master/"
-TARBALL_PATH="/home/jens/rpmbuild/SOURCES/"
-SPEC_PATH="/home/jens/rpmbuild/SPECS/"
+TARBALL_PATH="${HOME}/rpmbuild/SOURCES/"
+SPEC_PATH="${HOME}/rpmbuild/SPECS/"
 SPEC_FILE="gnome-shell-extension-panel-osd.spec"
 
 SCRIPT_DIR=`dirname "$0"`
-#echo "x${SCRIPT_DIR}x"
 SCRIPT_DIR=`( cd "$SCRIPT_DIR" && pwd )`
-#echo "y${SCRIPT_DIR}y"
 
 
 if test -z "$1"; then
@@ -42,6 +67,8 @@ mv ${SPEC_FILE} ${SPEC_FILE}.tmp
 sed "1 s/%global git .*/%global git $COMMIT/" < ${SPEC_FILE}.tmp > ${SPEC_FILE}
 
 rpmdev-bumpspec --comment="Fresh git checkout." --userstring="Jens Lody <fedora@jenslody.de>" ${SPEC_FILE}
+
+vi ${SPEC_FILE}
 
 cp ${SPEC_FILE} ${SPEC_PATH}${SPEC_FILE}
 rm -f ${SPEC_FILE}
