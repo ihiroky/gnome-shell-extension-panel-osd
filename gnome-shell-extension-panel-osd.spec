@@ -17,7 +17,7 @@ Source0:        https://github.com/jenslody/gnome-shell-extension-panel-osd/tarb
 BuildArch:      noarch
 
 BuildRequires:  autoconf, automake, glib2-devel, gnome-common >= 3.10.0, intltool
-Requires:       gnome-shell-extension-common >= 3.10.0
+Requires:       gnome-shell-extension-common >= 3.10.0, glib2
 
 
 %description
