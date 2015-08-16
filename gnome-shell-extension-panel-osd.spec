@@ -2,8 +2,6 @@
 %global uuid panel-osd@berend.de.schouwer.gmail.com
 %global github jenslody-gnome-shell-extension-panel-osd
 %global checkout git%{git}
-%global gs_version %(dnf info gnome-shell | grep Version | cut -d \":\" -f 2 | cut -d \" \" -f 2)
-%global gs_major_version %(echo %{gs_version} | cut -d \".\" -f 1-2)
 
 Name:           gnome-shell-extension-panel-osd
 Version:        1
@@ -18,7 +16,7 @@ URL:            https://github.com/jenslody/gnome-shell-extension-panel-osd
 Source0:        https://github.com/jenslody/gnome-shell-extension-panel-osd/tarball/master/%{github}-%{git}.tar.gz
 BuildArch:      noarch
 
-BuildRequires:  autoconf >= 2.53, automake >= 1.9, glib2-devel, gnome-common >= 3.10.0, intltool >= 0.25
+BuildRequires:  autoconf, automake, glib2-devel, gnome-common >= 3.10.0, intltool
 Requires:       gnome-shell-extension-common >= 3.10.0
 
 
@@ -30,7 +28,6 @@ messages at any (configurable) place on the (primary) monitor.
 %setup -q -n %{github}-%{git}
 
 %build
-sed -i "s/^\"shell-version\":.*/\"shell-version\": [ \"%{gs_version}\", \"%{gs_major_version}\" ],/g" data/metadata.json.in
 NOCONFIGURE=1 ./autogen.sh
 %configure --prefix=%{_prefix}
 make %{?_smp_mflags}
