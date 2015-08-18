@@ -17,7 +17,7 @@ Source0:        https://github.com/jenslody/gnome-shell-extension-panel-osd/tarb
 BuildArch:      noarch
 
 BuildRequires:  autoconf, automake, glib2-devel, gnome-common >= 3.10.0, intltool
-Requires:       gnome-shell-extension-common >= 3.10.0, glib2
+Requires:       gnome-shell >= 3.10.0
 
 
 %description
@@ -48,7 +48,7 @@ fi
 %license COPYING
 %doc AUTHORS README.md
 %{_datadir}/glib-2.0/schemas/org.gnome.shell.extensions.panel-osd.gschema.xml
-%{_datadir}/gnome-shell/extensions/%{uuid}/
+%{_datadir}/gnome-shell/extensions/
 
 %changelog
 * Sun Jan 26 2014 Jens Lody <jens@jenslody.de>
