@@ -59,7 +59,7 @@ fi
 %license COPYING
 %doc AUTHORS README.md
 %{_datadir}/glib-2.0/schemas/org.gnome.shell.extensions.panel-osd.gschema.xml
-%{_datadir}/gnome-shell/extensions/
+%{_datadir}/gnome-shell/extensions/%{uuid}
 
 %changelog
 * Thu Aug 20 2015 Jens Lody <fedora@jenslody.de> - 1-0.1.20150821gitcb1f6f6
