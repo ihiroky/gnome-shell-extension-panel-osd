@@ -27,6 +27,10 @@ If it is not installed automatically, just run:
 
     sudo yum localinstall --nogpgcheck http://rpm.jenslody.de/fedora-jenslody.de-0.1-2.fc17.noarch.rpm
 
+If you are using dnf with the [COPR](https://copr.fedoraproject.org/) [plugin](http://dnf.baseurl.org/2014/03/19/copr-plugin/) you can also use my COPR repo by:
+
+    sudo dnf copr enable jenslody/gnome-shell-extensions
+
 Now you can install the extension, either via your favourite package-manager or on a console:
 
     sudo yum install gnome-shell-extension-panel-osd
