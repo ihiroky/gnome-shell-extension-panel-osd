@@ -328,16 +328,31 @@ let extensionHideNotification = function(animate) {
 
 
     if (animate) {
-        // JRL changes begin
-        this._tween(theNotification, '_notificationState', State.HIDDEN,
-                    { y: yPos,
-                    // JRL changes end
-                      opacity: 0,
-                      time: ANIMATION_TIME,
-                      transition: 'easeOutQuad',
-                      onComplete: this._hideNotificationCompleted,
-                      onCompleteScope: this
-                    });
+        if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
+            // JRL changes begin
+            this._tween(theNotification, '_notificationState', State.HIDDEN,
+                        { y: yPos,
+                        // JRL changes end
+                          _opacity: 0,
+                          time: ANIMATION_TIME,
+                          transition: 'easeOutBack',
+                          onUpdate: this._clampOpacity,
+                          onUpdateScope: this,
+                          onComplete: this._hideNotificationCompleted,
+                          onCompleteScope: this
+                        });
+        } else {
+            // JRL changes begin
+            this._tween(theNotification, '_notificationState', State.HIDDEN,
+                        { y: yPos,
+                        // JRL changes end
+                          opacity: 0,
+                          time: ANIMATION_TIME,
+                          transition: 'easeOutQuad',
+                          onComplete: this._hideNotificationCompleted,
+                          onCompleteScope: this
+                        });
+        }
     } else {
         // JRL changes begin
         Tweener.removeTweens(theNotification);
