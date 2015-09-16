@@ -118,6 +118,24 @@ let loadConfig = function() {
     });
 };
 
+let versionAtLeast = function(atleast, current) {
+    let currentArray = current.split('.');
+    let major = currentArray[0];
+    let minor = currentArray[1];
+    let point = currentArray[2];
+    let atleastArray = atleast.split('.');
+    if ((atleastArray[0] > major) ||
+        (atleastArray[0] == major &&
+         atleastArray[1] > minor) ||
+        (atleastArray[0] == major &&
+         atleastArray[1] == minor) &&
+        (atleastArray[2] == undefined ||
+         atleastArray[2] >= point))
+        return true;
+    return false;
+}
+
+
 let getX_position = function() {
     if (!Settings)
         loadConfig();
@@ -162,7 +180,7 @@ let setTestNotification = function(v) {
  */
 let extensionShowNotification = function() {
     this._notification = this._notificationQueue.shift();
-    if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+    if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
         this.emit('queue-changed');
     }
 
@@ -173,7 +191,7 @@ let extensionShowNotification = function() {
         this.idleMonitor.add_user_active_watch(Lang.bind(this, this._onIdleMonitorBecameActive));
     }
 
-    if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+    if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
         this._banner = this._notification.createBanner();
         this._bannerClickedId = this._banner.connect('done-displaying',
                                                      Lang.bind(this, this._escapeTray));
@@ -231,7 +249,7 @@ let extensionShowNotification = function() {
     // the mouse is moving towards it or within it.
     this._lastSeenMouseX = x;
     this._lastSeenMouseY = y;
-    if (ExtensionUtils.versionCheck(['3.14','3.16'], Config.PACKAGE_VERSION)) {
+    if (versionAtLeast('3.14', Config.PACKAGE_VERSION)) {
         this._resetNotificationLeftTimeout();
     }
 };
@@ -248,7 +266,7 @@ let extensionHideNotification = function(animate) {
     this._notificationFocusGrabber.ungrabFocus();
 
     let yPos;
-    if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+    if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
         if (getY_position() < 50)
             yPos = Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height;
         else
@@ -285,7 +303,7 @@ let extensionHideNotification = function(animate) {
         }
     }
 
-    if (ExtensionUtils.versionCheck(['3.14','3.16'], Config.PACKAGE_VERSION)) {
+    if (versionAtLeast('3.14', Config.PACKAGE_VERSION)) {
         this._resetNotificationLeftTimeout();
     }
     else
@@ -300,11 +318,11 @@ let extensionHideNotification = function(animate) {
 
     // JRL changes begin
     let theNotification;
-    if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+    if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
         theNotification = this._bannerBin;
     }else
     {
-        theNotification =this._notificationWidget;
+        theNotification = this._notificationWidget;
     }
    // JRL changes end
 
@@ -343,7 +361,7 @@ let extensionHideNotification = function(animate) {
 let extensionUpdateShowingNotification = function() {
     // JRL changes begin
     // first reset the border-radius to the default
-    if (!ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+    if (!versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
         this._notification._table.set_style('border-radius:;');
         if (getY_position() > 0.1)
         {
@@ -375,7 +393,7 @@ let extensionUpdateShowingNotification = function() {
         // JRL changes end
         this._notification.source.policy.forceExpanded)
         {
-            if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION))
+            if (versionAtLeast('3.16', Config.PACKAGE_VERSION))
                 this._expandBanner(true);
             else
                 this._expandNotification(true);
@@ -384,7 +402,7 @@ let extensionUpdateShowingNotification = function() {
 
     // JRL changes begin
     let theNotification;
-    if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+    if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
         theNotification = this._bannerBin;
     }else
     {
@@ -396,7 +414,7 @@ let extensionUpdateShowingNotification = function() {
     // "hide top panel" keeps the height and just moves the panel out of the visible area, so using
     // the panels-height is not enough.
     let yPos;
-    if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+    if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
         let yTop = Main.layoutManager.bottomMonitor.y
 
         if (Main.layoutManager.bottomMonitor == Main.layoutManager.primaryMonitor)
@@ -434,9 +452,11 @@ let extensionUpdateShowingNotification = function() {
     // notification is being shown.
 
     let tweenParams;
-    if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+    if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
         tweenParams = { _opacity: 255,
+                            // JRL changes begin
                             y: yPos,
+                            // JRL changes end
                             time: ANIMATION_TIME,
                             transition: 'easeOutBack',
                             onUpdate: this._clampOpacity,
@@ -489,7 +509,7 @@ let extensiononNotificationExpanded = function() {
     } else if (this._notification.y != expandedY) {
         // Tween also opacity here, to override a possible tween that's
         // currently hiding the notification.
-        if (ExtensionUtils.versionCheck(['3.14'], Config.PACKAGE_VERSION)) {
+        if (versionAtLeast('3.14', Config.PACKAGE_VERSION)) {
             Tweener.addTween(this._notificationWidget,
                              { y: expandedY,
                                opacity: 255,
@@ -518,7 +538,7 @@ let extensiononNotificationExpanded = function() {
  *  Overload the methods.
  */
 function enable() {
-    if (ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+    if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
         notificationWidget = Main.messageTray._bannerBin;
     }else
     {
@@ -563,7 +583,7 @@ function disable() {
     Main.messageTray._showNotification = originalShowNotification;
     Main.messageTray._hideNotification = originalHideNotification;
     Main.messageTray._updateShowingNotification = originalUpdateShowingNotification;
-    if (!ExtensionUtils.versionCheck(['3.16'], Config.PACKAGE_VERSION)) {
+    if (!versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
         Main.messageTray._onNotificationExpanded = originalExpandMethod;
     }
 }
