@@ -1,11 +1,12 @@
-%global git 60eff04
+%global git 0205d68
 %global uuid panel-osd@berend.de.schouwer.gmail.com
 %global github jenslody-gnome-shell-extension-panel-osd
 %global checkout git%{git}
+%global checkout_date 20150918
 
 Name:           gnome-shell-extension-panel-osd
 Version:        1
-Release:        0.0.%(date +%Y%m%d)%{checkout}%{?dist}
+Release:        0.1.%{checkout_date}%{checkout}%{?dist}
 Summary:        Configure the place where notifications are shown
 
 Group:          User Interface/Desktops
@@ -62,6 +63,9 @@ fi
 %{_datadir}/gnome-shell/extensions/%{uuid}
 
 %changelog
+* Thu Sep 17 2015 Jens Lody <fedora@jenslody.de> - 1-0.1.20150918git0205d68
+- Use checkout-date instead of build-date in package-version.
+
 * Thu Aug 20 2015 Jens Lody <fedora@jenslody.de> - 1-0.1.20150821gitcb1f6f6
 - Remove dot before git in Release-tag.
 - Use (conditional) file-triggers for schema compiling, introduced in fc24.
