@@ -124,13 +124,13 @@ let versionAtLeast = function(atleast, current) {
     let minor = currentArray[1];
     let point = currentArray[2];
     let atleastArray = atleast.split('.');
-    if ((atleastArray[0] > major) ||
+    if ((atleastArray[0] < major) ||
         (atleastArray[0] == major &&
-         atleastArray[1] > minor) ||
+         atleastArray[1] < minor) ||
         (atleastArray[0] == major &&
          atleastArray[1] == minor) &&
         (atleastArray[2] == undefined ||
-         atleastArray[2] >= point))
+         atleastArray[2] <= point))
         return true;
     return false;
 }
