@@ -1,0 +1,63 @@
+# Chinese translations for gnome-shell-extension-panel-osd package
+# gnome-shell-extension-panel-osd 软件包的简体中文翻译.
+# Copyright (C) 2015 THE gnome-shell-extension-panel-osd'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the gnome-shell-extension-panel-osd package.
+# 绿色圣光 <lishaohui.qd@163.com>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-shell-extension-panel-osd VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-03-07 18:36+0100\n"
+"PO-Revision-Date: 2015-09-20 18:29+0800\n"
+"Last-Translator: 绿色圣光 <lishaohui.qd@163.com>\n"
+"Language-Team: Chinese (Simplified) <>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Gtranslator 2.91.7\n"
+
+#: ../src/extension.js:85
+msgid ""
+"This is just a multiline test-message to show where the notification will be "
+"placed and to test expansion (showing details)."
+msgstr ""
+"这仅仅是一个多行的测试消息，用来展示通知将被显示在什么地方，同时测试一下扩展"
+"功能（显示细节）。"
+
+#: ../data/panel-osd-settings.ui:39
+msgid "Horizontal position [%] from 0% (left) to 100% (right)"
+msgstr "水平位置百分比，从 0% （左侧）到 100% （右侧）"
+
+#: ../data/panel-osd-settings.ui:86
+msgid "Vertical position [%] from 0% (bottom) to 100% (top)"
+msgstr "垂直位置百分比，从 0% （底端）到 100% （顶端）"
+
+#: ../data/panel-osd-settings.ui:174
+msgid "Reset horizontal position to defaults"
+msgstr "重置水平位置到默认值"
+
+#: ../data/panel-osd-settings.ui:189
+msgid "Reset vertical position to defaults"
+msgstr "重置垂直位置到默认值"
+
+#: ../data/panel-osd-settings.ui:207
+msgid "Reset"
+msgstr "重置"
+
+#: ../data/panel-osd-settings.ui:265
+msgid "Force showing details for all notifications"
+msgstr "强制所有通知显示细节"
+
+#: ../data/panel-osd-settings.ui:307
+msgid ""
+"Delay [s] before test-notification is shown. If it is too short, the "
+"notification might close immediately after it is shown."
+msgstr ""
+"测试通知显示前延迟的秒数。如果太短，通知可能会在显示出来后，被立即关掉。"
+
+#: ../data/panel-osd-settings.ui:336
+msgid "Show test notification"
+msgstr "显示测试通知"
