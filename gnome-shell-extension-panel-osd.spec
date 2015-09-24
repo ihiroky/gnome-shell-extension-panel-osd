@@ -20,10 +20,8 @@ BuildArch:      noarch
 BuildRequires:  autoconf, automake, glib2-devel, gnome-common >= 3.10.0, intltool
 # In Fedora  >= 24 %%{_datadir}/gnome-shell/extensions/ is owned by gnome-shell,
 # before it was owned by gnome-shell-extension-common
-%if 0%{?fedora} >= 24
+%if 0%{?fedora} >= 23
 Requires:       gnome-shell >= 3.12.0
-%else
-Requires:       gnome-shell-extension-common >= 3.12.0
 %endif
 
 
