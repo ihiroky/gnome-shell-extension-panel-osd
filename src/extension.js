@@ -204,12 +204,10 @@ let extensionShowNotification = function() {
         this._bannerBin._opacity = 0;
         this._bannerBin.opacity = 0;
 
-        let yTop = (Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
-
-        let yBottom = this._banner.actor.height;
-
-        this._bannerBin.y = -(yTop - yBottom) * getY_position() / 100 + yBottom;
-        this._bannerBin.y = -this._banner.actor.height;
+        if (getY_position() < 50)
+            this._bannerBin.y = Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height;
+        else
+            this._bannerBin.y = -this._banner.actor.height;
 
         this.actor.show();
     } else
@@ -224,10 +222,10 @@ let extensionShowNotification = function() {
         this._notificationWidget.opacity = 0;
         // JRL changes begin
         //this._notificationWidget.y = 0;
-        let yTop = -(Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
-        let yBottom = 0;
-
-        this._notificationWidget.y = (yTop - yBottom) * getY_position() / 100 + yBottom;
+        if (getY_position() < 50)
+            this._notificationWidget.y = this.actor.height;
+        else
+            this._notificationWidget.y = -(Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
         // JRL changes end
 
 
