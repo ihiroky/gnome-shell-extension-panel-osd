@@ -72,8 +72,6 @@ let originalHideNotification;
 let notificationWidget;
 let panel;
 
-let originalNotificationWidgetX;
-
 /*
  *  We need these constants to call Tween with values consistent to the
  *  MessageTray
@@ -564,8 +562,6 @@ function enable() {
 
     originalUpdateShowingNotification = Main.messageTray._updateShowingNotification;
     Main.messageTray._updateShowingNotification = extensionUpdateShowingNotification;
-    originalNotificationWidgetX = notificationWidget.x;
-
 
     originalHideNotification = Main.messageTray._hideNotification;
     Main.messageTray._hideNotification = extensionHideNotification;
@@ -589,7 +585,8 @@ function disable() {
         Mainloop.source_remove(showTestNotificationTimeout);
 
     // reset x-position
-    notificationWidget.x = originalNotificationWidgetX;
+    notificationWidget.x = 0;
+
     Main.messageTray._showNotification = originalShowNotification;
     Main.messageTray._hideNotification = originalHideNotification;
     Main.messageTray._updateShowingNotification = originalUpdateShowingNotification;
