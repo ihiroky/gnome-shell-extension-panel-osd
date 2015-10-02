@@ -557,21 +557,21 @@ function enable() {
     {
         notificationWidget = Main.messageTray._notificationWidget;
         originalExpandMethod = Main.messageTray._onNotificationExpanded;
+        Main.messageTray._onNotificationExpanded = extensiononNotificationExpanded;
     }
     originalShowNotification = Main.messageTray._showNotification;
-    originalUpdateShowingNotification = Main.messageTray._updateShowingNotification;
-    originalHideNotification = Main.messageTray._hideNotification;
-    panel = Main.layoutManager.panelBox;
+    Main.messageTray._showNotification = extensionShowNotification;
 
+    originalUpdateShowingNotification = Main.messageTray._updateShowingNotification;
+    Main.messageTray._updateShowingNotification = extensionUpdateShowingNotification;
     originalNotificationWidgetX = notificationWidget.x;
 
 
-
-
-    Main.messageTray._showNotification = extensionShowNotification;
+    originalHideNotification = Main.messageTray._hideNotification;
     Main.messageTray._hideNotification = extensionHideNotification;
-    Main.messageTray._updateShowingNotification = extensionUpdateShowingNotification;
-    Main.messageTray._onNotificationExpanded = extensiononNotificationExpanded;
+
+    panel = Main.layoutManager.panelBox;
+
     loadConfig();
 }
 
@@ -588,15 +588,15 @@ function disable() {
     if (showTestNotificationTimeout !== undefined)
         Mainloop.source_remove(showTestNotificationTimeout);
 
-    // remove our (inline-)style, in case we just show a notification, otherwise the radius is drawn incorrect
-    if (Main.messageTray._notification)
-        Main.messageTray._notification.set_style('border-radius:;');
     // reset x-position
     notificationWidget.x = originalNotificationWidgetX;
     Main.messageTray._showNotification = originalShowNotification;
     Main.messageTray._hideNotification = originalHideNotification;
     Main.messageTray._updateShowingNotification = originalUpdateShowingNotification;
     if (!versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
+        // remove our (inline-)style, in case we just show a notification, otherwise the radius is drawn incorrect
+        if (Main.messageTray._notification)
+            Main.messageTray._notification.set_style('border-radius:;');
         Main.messageTray._onNotificationExpanded = originalExpandMethod;
     }
 }
