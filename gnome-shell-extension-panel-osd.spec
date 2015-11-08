@@ -1,12 +1,12 @@
-%global git 0205d68
+%global git 1f87427
 %global uuid panel-osd@berend.de.schouwer.gmail.com
 %global github jenslody-gnome-shell-extension-panel-osd
 %global checkout git%{git}
-%global checkout_date 20150918
+%global checkout_date 20151002
 
 Name:           gnome-shell-extension-panel-osd
 Version:        1
-Release:        0.1.%{checkout_date}%{checkout}%{?dist}
+Release:        0.2.%{checkout_date}%{checkout}%{?dist}
 Summary:        Configure the place where notifications are shown
 
 Group:          User Interface/Desktops
@@ -18,11 +18,7 @@ Source0:        https://github.com/jenslody/gnome-shell-extension-panel-osd/tarb
 BuildArch:      noarch
 
 BuildRequires:  autoconf, automake, glib2-devel, gnome-common >= 3.10.0, intltool
-# In Fedora  >= 24 %%{_datadir}/gnome-shell/extensions/ is owned by gnome-shell,
-# before it was owned by gnome-shell-extension-common
-%if 0%{?fedora} >= 23
-Requires:       gnome-shell >= 3.12.0
-%endif
+Requires:       gnome-shell >= 3.10.0
 
 
 %description
@@ -58,9 +54,16 @@ fi
 %license COPYING
 %doc AUTHORS README.md
 %{_datadir}/glib-2.0/schemas/org.gnome.shell.extensions.panel-osd.gschema.xml
+%if 0%{?fedora} < 23
+%dir %{_datadir}/gnome-shell/extensions
+%endif
 %{_datadir}/gnome-shell/extensions/%{uuid}
 
 %changelog
+* Fri Oct 02 2015 Jens Lody <fedora@jenslody.de> - 1-0.2.20151002git1f87427
+- Do not require gnome-shell-extensions-common.
+- Require gnome-shell instead on Fedora >= 23.
+
 * Thu Sep 17 2015 Jens Lody <fedora@jenslody.de> - 1-0.1.20150918git0205d68
 - Use checkout-date instead of build-date in package-version.
 
