@@ -33,13 +33,15 @@
 		<Unit filename="data/metadata.json.in" />
 		<Unit filename="data/org.gnome.shell.extensions.panel-osd.gschema.xml.in" />
 		<Unit filename="data/panel-osd-settings.ui" />
-		<Unit filename="data/stylesheet.css" />
 		<Unit filename="gnome-shell-extension-panel-osd.spec" />
+		<Unit filename="po/LINGUAS" />
 		<Unit filename="po/Makefile.in" />
 		<Unit filename="po/POTFILES.in" />
 		<Unit filename="po/de.po" />
 		<Unit filename="po/gnome-shell-extension-panel-osd.pot" />
+		<Unit filename="po/pt_BR.po" />
 		<Unit filename="po/update.js" />
+		<Unit filename="po/zh_CN.po" />
 		<Unit filename="src/Makefile.am" />
 		<Unit filename="src/convenience.js" />
 		<Unit filename="src/extension.js" />
