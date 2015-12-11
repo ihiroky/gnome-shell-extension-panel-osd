@@ -24,6 +24,12 @@ Requires:       gnome-shell >= 3.10.0
 %description
 gnome-shell-extension-panel-osd is an extension to show the notification
 messages at any (configurable) place on the (primary) monitor.
+Be aware, that system-wide installed gnome-shell-extensions are disabled by default
+and have to be enable by the user(s), if they get installed the first time.
+You can use gnome-tweak-tool (additional package) or run:
+"gnome-shell-extension-tool -e %uuid" (without the
+quotes) on a console.
+
 
 %prep
 %setup -q -n %{github}-%{git}
