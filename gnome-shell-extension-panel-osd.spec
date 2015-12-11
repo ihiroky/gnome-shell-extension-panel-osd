@@ -1,12 +1,12 @@
-%global git 1f87427
+%global git 82635f3
 %global uuid panel-osd@berend.de.schouwer.gmail.com
 %global github jenslody-gnome-shell-extension-panel-osd
 %global checkout git%{git}
-%global checkout_date 20151002
+%global checkout_date 20151125
 
 Name:           gnome-shell-extension-panel-osd
 Version:        1
-Release:        0.2.%{checkout_date}%{checkout}%{?dist}
+Release:        0.5.%{checkout_date}%{checkout}%{?dist}
 Summary:        Configure the place where notifications are shown
 
 Group:          User Interface/Desktops
@@ -60,6 +60,16 @@ fi
 %{_datadir}/gnome-shell/extensions/%{uuid}
 
 %changelog
+* Wed Nov 25 2015 Jens Lody <fedora@jenslody.de> - 1-0.5.20151125git82635f3
+- Add support for new development version of gnome-shell (3.19.2).
+
+* Fri Nov 20 2015 Jens Lody <fedora@jenslody.de> - 1-0.4.20151120gitb82b69d
+- Remove unneeded --prefix-parameter from configure-call.
+
+* Wed Nov 18 2015 Jens Lody <fedora@jenslody.de> - 1-0.3.20151118git61c1bd4
+- Fresh git checkout.
+- Some bugfixes and gnome.shell 3.19.1 compatibility.
+
 * Fri Oct 02 2015 Jens Lody <fedora@jenslody.de> - 1-0.2.20151002git1f87427
 - Do not require gnome-shell-extensions-common.
 - Require gnome-shell instead on Fedora >= 23.
