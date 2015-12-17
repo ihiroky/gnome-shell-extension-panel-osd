@@ -29,8 +29,6 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-PKG_NAME="gnome-shell-extension-panel-osd"
-
 touch ChangeLog
 
 test -f $srcdir/configure.ac || {
