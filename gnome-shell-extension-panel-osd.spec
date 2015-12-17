@@ -1,12 +1,12 @@
-%global git 82635f3
+%global git d25d292
 %global uuid panel-osd@berend.de.schouwer.gmail.com
 %global github jenslody-gnome-shell-extension-panel-osd
 %global checkout git%{git}
-%global checkout_date 20151125
+%global checkout_date 20151211
 
 Name:           gnome-shell-extension-panel-osd
 Version:        1
-Release:        0.5.%{checkout_date}%{checkout}%{?dist}
+Release:        0.6.%{checkout_date}%{checkout}%{?dist}
 Summary:        Configure the place where notifications are shown
 
 Group:          User Interface/Desktops
@@ -29,7 +29,6 @@ and have to be enable by the user(s), if they get installed the first time.
 You can use gnome-tweak-tool (additional package) or run:
 "gnome-shell-extension-tool -e %uuid" (without the
 quotes) on a console.
-
 
 %prep
 %setup -q -n %{github}-%{git}
@@ -66,6 +65,9 @@ fi
 %{_datadir}/gnome-shell/extensions/%{uuid}
 
 %changelog
+* Fri Dec 11 2015 Jens Lody <fedora@jenslody.de> - 1-0.6.20151211gitd25d292
+- Add hint about enabling system-wide installed shell-extensions.
+
 * Wed Nov 25 2015 Jens Lody <fedora@jenslody.de> - 1-0.5.20151125git82635f3
 - Add support for new development version of gnome-shell (3.19.2).
 
