@@ -1,12 +1,12 @@
-%global git d25d292
+%global git db3ac75
 %global uuid panel-osd@berend.de.schouwer.gmail.com
 %global github jenslody-gnome-shell-extension-panel-osd
 %global checkout git%{git}
-%global checkout_date 20151211
+%global checkout_date 20151217
 
 Name:           gnome-shell-extension-panel-osd
 Version:        1
-Release:        0.6.%{checkout_date}%{checkout}%{?dist}
+Release:        0.7.%{checkout_date}%{checkout}%{?dist}
 Summary:        Configure the place where notifications are shown
 
 Group:          User Interface/Desktops
@@ -17,7 +17,8 @@ URL:            https://github.com/jenslody/gnome-shell-extension-panel-osd
 Source0:        https://github.com/jenslody/gnome-shell-extension-panel-osd/tarball/master/%{github}-%{git}.tar.gz
 BuildArch:      noarch
 
-BuildRequires:  autoconf, automake, glib2-devel, gnome-common >= 3.10.0, intltool
+# The version of gnome-common in CentOS7 is only 3.7.4
+BuildRequires:  autoconf, automake, glib2-devel, gnome-common >= 3.7.4, intltool
 Requires:       gnome-shell >= 3.10.0
 
 
@@ -65,6 +66,9 @@ fi
 %{_datadir}/gnome-shell/extensions/%{uuid}
 
 %changelog
+* Thu Dec 17 2015 Jens Lody <fedora@jenslody.de> - 1-0.7.20151217gitdb3ac75
+- Add support for new development version of gnome-shell (3.19.2).
+
 * Fri Dec 11 2015 Jens Lody <fedora@jenslody.de> - 1-0.6.20151211gitd25d292
 - Add hint about enabling system-wide installed shell-extensions.
 
