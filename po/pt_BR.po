@@ -1,29 +1,29 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# Fábio Nogueira <fnogueira@gnome.org>, 2015.
+# Fábio Nogueira <fnogueira@gnome.org>, 2015 - 2016.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-10 00:33-0300\n"
-"PO-Revision-Date: 2015-11-10 01:44-0300\n"
-"Language-Team: \n"
+"POT-Creation-Date: 2016-01-28 16:37-0300\n"
+"PO-Revision-Date: 2016-01-28 16:37-0300\n"
+"Last-Translator: Fábio Nogueira <fnogueira@gnome.org>\n"
+"Language-Team: Português do Brasil\n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.5\n"
-"Last-Translator: Fábio Nogueira <fnogueira@gnome.org>\n"
+"X-Generator: Poedit 1.8.6\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"Language: pt_BR\n"
 
 #: ../src/extension.js:85
 msgid ""
 "This is just a multiline test-message to show where the notification will be "
 "placed and to test expansion (showing details)."
 msgstr ""
-"Esta é apenas uma mensagem de testevde várias linhas para mostrar onde a "
+"Esta é apenas uma mensagem de teste de várias linhas para mostrar onde a "
 "notificação será posicionada e testar sua expansão (mostrando detalhes)."
 
 #: ../data/panel-osd-settings.ui:39
