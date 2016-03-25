@@ -1,12 +1,12 @@
-%global git db3ac75
+%global git e052ded
 %global uuid panel-osd@berend.de.schouwer.gmail.com
 %global github jenslody-gnome-shell-extension-panel-osd
 %global checkout git%{git}
-%global checkout_date 20151217
+%global checkout_date 20160325
 
 Name:           gnome-shell-extension-panel-osd
 Version:        1
-Release:        0.7.%{checkout_date}%{checkout}%{?dist}
+Release:        0.13.%{checkout_date}%{checkout}%{?dist}
 Summary:        Configure the place where notifications are shown
 
 Group:          User Interface/Desktops
@@ -66,6 +66,26 @@ fi
 %{_datadir}/gnome-shell/extensions/%{uuid}
 
 %changelog
+* Fri Mar 25 2016 Jens Lody <fedora@jenslody.de> - 1-0.13.20160325gite052ded
+- Fix build error, due to incorrect git-commit number.
+
+* Fri Mar 25 2016 Jens Lody <fedora@jenslody.de> - 1-0.12.20160325git9bc9ae6
+- Fixed spelling-error in pt_BR.po .
+- Fixed changelog, the extension is not (yet?) translated to dutch, sorry.
+
+* Fri Mar 25 2016 Jens Lody <fedora@jenslody.de> - 1-0.11.20160325gite052ded
+- Updated dutch translation.
+- Add support for new version of gnome-shell (3.20).
+
+* Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 1-0.10.20160123gitf064a06
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
+* Sat Jan 23 2016 Jens Lody <fedora@jenslody.de> - 1-0.9.20160123gitf064a06
+- Add support for new development version of gnome-shell (3.19.4).
+
+* Fri Dec 18 2015 Jens Lody <fedora@jenslody.de> - 1-0.8.20151218gitadabfdf
+- Fix build on epel7 (gnome-common is 3.7.4, even if gnome-shell is 3.14).
+
 * Thu Dec 17 2015 Jens Lody <fedora@jenslody.de> - 1-0.7.20151217gitdb3ac75
 - Add support for new development version of gnome-shell (3.19.2).
 
