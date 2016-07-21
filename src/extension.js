@@ -46,6 +46,7 @@ const Mainloop = imports.mainloop;
 const Me = ExtensionUtils.getCurrentExtension();
 const Convenience = Me.imports.convenience;
 const St = imports.gi.St;
+const Meta = imports.gi.Meta;
 
 const Gettext = imports.gettext.domain('gnome-shell-extension-panel-osd');
 const _ = Gettext.gettext;
@@ -90,6 +91,13 @@ const State = {
     SHOWN: 2,
     HIDING: 3
 };
+
+let _availablePrimaryRect = new Meta.Rectangle({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0
+})
 
 function init() {
     Convenience.initTranslations('gnome-shell-extension-panel-osd');
@@ -169,6 +177,39 @@ let setTestNotification = function(v) {
         loadConfig();
     Settings.set_boolean(PANEL_OSD_TEST_NOTIFICATION, v);
 };
+
+let updateAvailablePrimaryRect = function() {
+    let monitor=Main.layoutManager.monitors[0];
+    _availablePrimaryRect.x=monitor.x;
+    _availablePrimaryRect.y=monitor.y;
+    _availablePrimaryRect.width=monitor.width;
+    _availablePrimaryRect.height=monitor.height;
+
+    log(new Error().fileName+':'+new Error().lineNumber+' => panel(x, y, width, height) = ('+panel.x+','+panel.y+','+panel.width+','+panel.height+')');
+
+    let panelRect = new Meta.Rectangle({ x: panel.x,
+                                         y: panel.y,
+                                         width: panel.width,
+                                         height: panel.height });
+    let [panelIntersects, rect] = _availablePrimaryRect.intersect(panelRect);
+
+    if (panelIntersects)
+    {
+        if (monitor.width == rect.width)
+        {
+           _availablePrimaryRect.height = monitor.height - rect.height;
+            if (monitor.y == rect.y)
+                _availablePrimaryRect.y = rect.height;
+        }
+        if (monitor.height == rect.height)
+        {
+           _availablePrimaryRect.width = monitor.width - rect.width;
+            if (monitor.x == rect.x)
+                _availablePrimaryRect.x = rect.width;
+        }
+    }
+};
+
 /*
  *  Copied from MessageTray._showNotification()
  *
@@ -203,7 +244,7 @@ let extensionShowNotification = function() {
         this._bannerBin.opacity = 0;
 
         if (getY_position() < 50)
-            this._bannerBin.y = Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height;
+            this._bannerBin.y = Main.layoutManager.monitors[0].height;
         else
             this._bannerBin.y = -this._banner.actor.height;
 
@@ -223,7 +264,7 @@ let extensionShowNotification = function() {
         if (getY_position() < 50)
             this._notificationWidget.y = this.actor.height;
         else
-            this._notificationWidget.y = -(Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
+            this._notificationWidget.y = -(Main.layoutManager.monitors[0].y + Main.layoutManager.monitors[0].height);
         // JRL changes end
 
 
@@ -264,7 +305,7 @@ let extensionHideNotification = function(animate) {
     let yPos;
     if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
         if (getY_position() < 50)
-            yPos = Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height;
+            yPos = Main.layoutManager.monitors[0].y + Main.layoutManager.monitors[0].height;
         else
             yPos = -this._bannerBin.height;
 
@@ -287,7 +328,7 @@ let extensionHideNotification = function(animate) {
         if (getY_position() < 50)
             yPos = this.actor.height;
         else
-            yPos = -(Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
+            yPos = -(Main.layoutManager.monitors[0].y + Main.layoutManager.monitors[0].height);
         // JRL changes end
         if (this._notificationClickedId) {
             this._notification.disconnect(this._notificationClickedId);
@@ -425,18 +466,11 @@ let extensionUpdateShowingNotification = function() {
     // "hide top panel" keeps the height and just moves the panel out of the visible area, so using
     // the panels-height is not enough.
     let yPos;
+    updateAvailablePrimaryRect();
     if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
-        let yTop = Main.layoutManager.bottomMonitor.y
 
-        if (Main.layoutManager.bottomMonitor == Main.layoutManager.primaryMonitor)
-            yTop += (panel.y + panel.height);
+        yPos = (_availablePrimaryRect.height - theNotification.height) * (100-getY_position()) / 100;
 
-        let yBottom = theNotification.height;
-
-        yPos = (Main.layoutManager.bottomMonitor.height - yTop - yBottom) * (100-getY_position()) / 100;
-
-        if (yPos > (Main.layoutManager.bottomMonitor.height - theNotification.height))
-            yPos = Main.layoutManager.bottomMonitor.height - theNotification.height;
     }else
     {
         let yTop = -(Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
@@ -449,7 +483,7 @@ let extensionUpdateShowingNotification = function() {
         yPos = (yTop - yBottom) * getY_position() / 100 + yBottom;
         //
     }
-    theNotification.x = (Main.layoutManager.bottomMonitor.width - theNotification.width) * (getX_position() - 50) / 50;
+    theNotification.x = _availablePrimaryRect.x + ((_availablePrimaryRect.width - theNotification.width) * (getX_position() - 50) / 50);
     // JRL changes end
     // We tween all notifications to full opacity. This ensures that both new notifications and
     // notifications that might have been in the process of hiding get full opacity.
@@ -502,11 +536,11 @@ let extensionUpdateShowingNotification = function() {
 let extensiononNotificationExpanded = function() {
     // JRL changes begin
     //let expandedY = - this._notificationWidget.height;
-    let yTop = -(Main.layoutManager.bottomMonitor.y + Main.layoutManager.bottomMonitor.height);
-    if (Main.layoutManager.bottomMonitor == Main.layoutManager.primaryMonitor)
+    let yTop = -(Main.layoutManager.monitors[0].y + Main.layoutManager.monitors[0].height);
+    if (Main.layoutManager.monitors[0] == Main.layoutManager.primaryMonitor)
         yTop += (panel.y + panel.height);
-    if (yTop < (-Main.layoutManager.bottomMonitor.height))
-        yTop = -Main.layoutManager.bottomMonitor.height;
+    if (yTop < (-Main.layoutManager.monitors[0].height))
+        yTop = -Main.layoutManager.monitors[0].height;
     let yBottom = -this._notificationWidget.height;
 
     let expandedY = (yTop - yBottom) * getY_position() / 100 + yBottom;
