@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-07 18:36+0100\n"
+"POT-Creation-Date: 2016-07-21 23:09+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/extension.js:85
+#: ../src/extension.js:119
 msgid ""
 "This is just a multiline test-message to show where the notification will be "
 "placed and to test expansion (showing details)."
@@ -31,28 +31,28 @@ msgstr ""
 msgid "Vertical position [%] from 0% (bottom) to 100% (top)"
 msgstr ""
 
-#: ../data/panel-osd-settings.ui:174
+#: ../data/panel-osd-settings.ui:170
 msgid "Reset horizontal position to defaults"
 msgstr ""
 
-#: ../data/panel-osd-settings.ui:189
+#: ../data/panel-osd-settings.ui:183
 msgid "Reset vertical position to defaults"
 msgstr ""
 
-#: ../data/panel-osd-settings.ui:207
+#: ../data/panel-osd-settings.ui:199
 msgid "Reset"
 msgstr ""
 
-#: ../data/panel-osd-settings.ui:265
+#: ../data/panel-osd-settings.ui:257
 msgid "Force showing details for all notifications"
 msgstr ""
 
-#: ../data/panel-osd-settings.ui:307
+#: ../data/panel-osd-settings.ui:299
 msgid ""
 "Delay [s] before test-notification is shown. If it is too short, the "
 "notification might close immediately after it is shown."
 msgstr ""
 
-#: ../data/panel-osd-settings.ui:336
+#: ../data/panel-osd-settings.ui:328
 msgid "Show test notification"
 msgstr ""

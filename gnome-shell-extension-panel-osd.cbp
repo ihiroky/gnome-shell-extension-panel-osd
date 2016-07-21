@@ -39,6 +39,7 @@
 		<Unit filename="po/POTFILES.in" />
 		<Unit filename="po/de.po" />
 		<Unit filename="po/gnome-shell-extension-panel-osd.pot" />
+		<Unit filename="po/pl.po" />
 		<Unit filename="po/pt_BR.po" />
 		<Unit filename="po/update.js" />
 		<Unit filename="po/zh_CN.po" />

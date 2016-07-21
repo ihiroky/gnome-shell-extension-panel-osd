@@ -1,9 +1,30 @@
-#: ../src/extension.js:85
+# German translation for gnome-shell-extension-panel-osd
+# Copyright (C) 2011-2016 Jens Lody
+# This file is distributed under the same license as the gnome-shell-extension-panel-osd package.
+# Jens Lody <fedora@jenslody.de>, 2014-2016, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-shell-extension-panel-osd\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-07-21 23:09+0200\n"
+"PO-Revision-Date: 2016-07-21 23:08+0200\n"
+"Last-Translator: Jens Lody <fedora@jenslody.de>\n"
+"Language-Team: Deutsch <fedora@jenslody.de>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 2.91.7\n"
+
+#: ../src/extension.js:119
 msgid ""
 "This is just a multiline test-message to show where the notification will be "
 "placed and to test expansion (showing details)."
-msgstr "Dies ist nur eine einfache mehrzeilige Meldung um zu Zeigen, wo die"
-"Meldung angezeigt wird, und um das Erweitern (Details) zu zeigen. "
+msgstr ""
+"Dies ist nur eine einfache mehrzeilige Meldung um zu Zeigen, wo die Meldung "
+"angezeigt wird, und um das Erweitern (Details) zu zeigen. "
 
 #: ../data/panel-osd-settings.ui:39
 msgid "Horizontal position [%] from 0% (left) to 100% (right)"
@@ -13,29 +34,30 @@ msgstr "Horizontale Position [%] von links (0%) bis rechts (100%)"
 msgid "Vertical position [%] from 0% (bottom) to 100% (top)"
 msgstr "Vertikale Position [%] von unten (0%) bis oben (100%)"
 
-#: ../data/panel-osd-settings.ui:174
+#: ../data/panel-osd-settings.ui:170
 msgid "Reset horizontal position to defaults"
 msgstr "Horizontale Position auf Standardwert zurücksetzen"
 
-#: ../data/panel-osd-settings.ui:189
+#: ../data/panel-osd-settings.ui:183
 msgid "Reset vertical position to defaults"
 msgstr "Vertikale Position auf Standardwert zurücksetzen"
 
-#: ../data/panel-osd-settings.ui:207
+#: ../data/panel-osd-settings.ui:199
 msgid "Reset"
 msgstr "Zurücksetzen"
 
-#: ../data/panel-osd-settings.ui:265
+#: ../data/panel-osd-settings.ui:257
 msgid "Force showing details for all notifications"
 msgstr "Zeige alle Meldungen erweitert"
 
-#: ../data/panel-osd-settings.ui:307
+#: ../data/panel-osd-settings.ui:299
 msgid ""
 "Delay [s] before test-notification is shown. If it is too short, the "
 "notification might close immediately after it is shown."
-msgstr "Verzögerung [s] before die Test-Meldung gezeigt wird. Ist die "
-"Zeit zu kurz wird die Meldung sofort wieder geschlossen."
+msgstr ""
+"Verzögerung [s] before die Test-Meldung gezeigt wird. Ist die Zeit zu kurz "
+"wird die Meldung sofort wieder geschlossen."
 
-#: ../data/panel-osd-settings.ui:336
+#: ../data/panel-osd-settings.ui:328
 msgid "Show test notification"
 msgstr "Zeige Test-Meldung"

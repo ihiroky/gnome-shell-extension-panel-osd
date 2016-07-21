@@ -431,7 +431,8 @@ let extensionUpdateShowingNotification = function() {
                 tl = bl;
                 tr = br;
             }
-            this._notification._table.set_style(_('border-radius: %dpx %dpx %dpx %dpx;').format(tl, tr, bl, br));
+            // add N before underscore (_), to prevent translation
+            this._notification._table.set_style(N_('border-radius: %dpx %dpx %dpx %dpx;').format(tl, tr, bl, br));
         }
     }
     // JRL changes end
