@@ -1,12 +1,12 @@
-%global git e052ded
+%global git 6ad19f0
 %global uuid panel-osd@berend.de.schouwer.gmail.com
 %global github jenslody-gnome-shell-extension-panel-osd
 %global checkout git%{git}
-%global checkout_date 20160325
+%global checkout_date 20160721
 
 Name:           gnome-shell-extension-panel-osd
 Version:        1
-Release:        0.13.%{checkout_date}%{checkout}%{?dist}
+Release:        0.14.%{checkout_date}%{checkout}%{?dist}
 Summary:        Configure the place where notifications are shown
 
 Group:          User Interface/Desktops
@@ -18,7 +18,7 @@ Source0:        https://github.com/jenslody/gnome-shell-extension-panel-osd/tarb
 BuildArch:      noarch
 
 # The version of gnome-common in CentOS7 is only 3.7.4
-BuildRequires:  autoconf, automake, glib2-devel, gnome-common >= 3.7.4, intltool
+BuildRequires:  autoconf, automake, glib2-devel, gnome-common >= 3.7.4, gettext-devel
 Requires:       gnome-shell >= 3.10.0
 
 
@@ -66,6 +66,9 @@ fi
 %{_datadir}/gnome-shell/extensions/%{uuid}
 
 %changelog
+* Thu Jul 21 2016 Jens Lody <fedora@jenslody.de> - 1-0.14.20160721git6ad19f0
+- Fixes layout on multimonitor-systems or when using bottom-panel extensions.
+
 * Fri Mar 25 2016 Jens Lody <fedora@jenslody.de> - 1-0.13.20160325gite052ded
 - Fix build error, due to incorrect git-commit number.
 

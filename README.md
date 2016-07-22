@@ -46,7 +46,7 @@ Make sure you have the following dependencies installed:
 * *autoconf*,
 * *automake*,
 * *gnome-tweak-tool*,
-* *intltool*.
+* *gettext-devel*
 
 Run the following commands:
 

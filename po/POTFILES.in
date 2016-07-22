@@ -1,3 +1,4 @@
-../src/extension.js
-../src/prefs.js
-../data/panel-osd-settings.ui
+src/extension.js
+src/prefs.js
+data/org.gnome.shell.extensions.panel-osd.gschema.xml
+data/panel-osd-settings.ui
