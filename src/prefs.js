@@ -2,7 +2,7 @@
 /*
  *
  *  GNOME Shell Extension Panel OSD preferences
- *  - Creates a widget to set the preferences of the weather extension
+ *  - Creates a widget to set the preferences of the panel-osd extension
  *
  * Copyright (C) 2014 - 2015
  *     Jens Lody <jens@jenslody.de>,
