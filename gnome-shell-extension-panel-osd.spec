@@ -1,12 +1,12 @@
-%global git 5897019
+%global git db008b8
 %global uuid panel-osd@berend.de.schouwer.gmail.com
 %global github jenslody-gnome-shell-extension-panel-osd
 %global checkout git%{git}
-%global checkout_date 20160722
+%global checkout_date 20160730
 
 Name:           gnome-shell-extension-panel-osd
 Version:        1
-Release:        0.16.%{checkout_date}%{checkout}%{?dist}
+Release:        0.18.%{checkout_date}%{checkout}%{?dist}
 Summary:        Configure the place where notifications are shown
 
 Group:          User Interface/Desktops
@@ -66,6 +66,12 @@ fi
 %{_datadir}/gnome-shell/extensions/%{uuid}
 
 %changelog
+* Sat Jul 30 2016 Jens Lody <fedora@jenslody.de> - 1-0.18.20160730gitdb008b8
+- Fix issue with x-position of notification in some multimonitor setups.
+
+* Fri Jul 22 2016 Jens Lody <fedora@jenslody.de> - 1-0.17.20160722git4903cfc
+- Epel 7 build fix.
+
 * Fri Jul 22 2016 Jens Lody <fedora@jenslody.de> - 1-0.16.20160722git5897019
 - Switched translation to gettext via Makefile.
 - Add missing BR to gettext-devel.
