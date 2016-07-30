@@ -484,7 +484,7 @@ let extensionUpdateShowingNotification = function() {
         yPos = (yTop - yBottom) * getY_position() / 100 + yBottom;
         //
     }
-    theNotification.x = _availablePrimaryRect.x + ((_availablePrimaryRect.width - theNotification.width) * (getX_position() - 50) / 50);
+    theNotification.x = (_availablePrimaryRect.width - theNotification.width) * (getX_position() - 50) / 50;
     // JRL changes end
     // We tween all notifications to full opacity. This ensures that both new notifications and
     // notifications that might have been in the process of hiding get full opacity.
