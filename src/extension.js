@@ -185,8 +185,6 @@ let updateAvailablePrimaryRect = function() {
     _availablePrimaryRect.width=monitor.width;
     _availablePrimaryRect.height=monitor.height;
 
-    log(new Error().fileName+':'+new Error().lineNumber+' => panel(x, y, width, height) = ('+panel.x+','+panel.y+','+panel.width+','+panel.height+')');
-
     let panelRect = new Meta.Rectangle({ x: panel.x,
                                          y: panel.y,
                                          width: panel.width,
