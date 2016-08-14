@@ -625,7 +625,7 @@ function disable() {
     if (!versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
         // remove our (inline-)style, in case we just show a notification, otherwise the radius is drawn incorrect
         if (Main.messageTray._notification)
-            Main.messageTray._notification.set_style('border-radius:;');
+            Main.messageTray._notification._table.set_style('border-radius:;');
         Main.messageTray._onNotificationExpanded = originalExpandMethod;
     }
 }
