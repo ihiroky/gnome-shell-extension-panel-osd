@@ -1,12 +1,12 @@
-%global git db008b8
+%global git 42eeb7e
 %global uuid panel-osd@berend.de.schouwer.gmail.com
 %global github jenslody-gnome-shell-extension-panel-osd
 %global checkout git%{git}
-%global checkout_date 20160730
+%global checkout_date 20160914
 
 Name:           gnome-shell-extension-panel-osd
 Version:        1
-Release:        0.18.%{checkout_date}%{checkout}%{?dist}
+Release:        0.19.%{checkout_date}%{checkout}%{?dist}
 Summary:        Configure the place where notifications are shown
 
 Group:          User Interface/Desktops
@@ -66,6 +66,11 @@ fi
 %{_datadir}/gnome-shell/extensions/%{uuid}
 
 %changelog
+* Wed Sep 14 2016 Jens Lody <fedora@jenslody.de> - 1-0.19.20160914git42eeb7e
+- Support newest version of gnome-shell.
+- Fix a error, that only occurs, when the extension gets disabled while a
+  notification is shown.
+
 * Sat Jul 30 2016 Jens Lody <fedora@jenslody.de> - 1-0.18.20160730gitdb008b8
 - Fix issue with x-position of notification in some multimonitor setups.
 
