@@ -18,23 +18,7 @@ Go on the [Panel OSD](https://extensions.gnome.org/extension/708/panel-osd/) ext
 
 ### [Fedora](https://fedoraproject.org/)
 
-You can install the extension from [my repo](http://rpm.jenslody.de/).
-I have packages for Fedora 19 and 20.
-
-To install my repo download and install [this rpm](http://rpm.jenslody.de/fedora-jenslody.de-0.1-2.fc17.noarch.rpm).
-
-If it is not installed automatically, just run:
-
-    sudo yum localinstall --nogpgcheck http://rpm.jenslody.de/fedora-jenslody.de-0.1-2.fc17.noarch.rpm
-
-If you are using dnf with the [COPR](https://copr.fedoraproject.org/) [plugin](http://dnf.baseurl.org/2014/03/19/copr-plugin/) you can also use my COPR repo by:
-
-    sudo dnf copr enable jenslody/gnome-shell-extensions
-
-Now you can install the extension, either via your favourite package-manager or on a console:
-
-    sudo yum install gnome-shell-extension-panel-osd
-
+You can install the extension from the official Fedora repos.
 
 ## Generic (Local installation)
 
@@ -64,10 +48,14 @@ At the moment, there is no configuration needed.
 
 # Licence
 
-Copyright (C) 2011 - 2014
+Copyright &copy; 2011 - 2014
 
 * Berend De Schouwer,
 * Jens Lody <jens@jenslody.de>.
+
+Copyright &copy; 2014 - 2017
+
+* Jens Lody <fedora@jenslody.de>.
 
 This file is part of *gnome-shell-extension-panel-osd*.
 
