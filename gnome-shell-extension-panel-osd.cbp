@@ -39,9 +39,11 @@
 		<Unit filename="po/Makevars" />
 		<Unit filename="po/POTFILES.in" />
 		<Unit filename="po/de.po" />
+		<Unit filename="po/es.po" />
 		<Unit filename="po/gnome-shell-extension-panel-osd.pot" />
 		<Unit filename="po/pl.po" />
 		<Unit filename="po/pt_BR.po" />
+		<Unit filename="po/ru_RU.po" />
 		<Unit filename="po/zh_CN.po" />
 		<Unit filename="src/Makefile.am" />
 		<Unit filename="src/convenience.js" />
