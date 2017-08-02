@@ -2,6 +2,7 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Fábio Nogueira <fnogueira@gnome.org>, 2015 - 2016, 2016.
+# David Carvalho <david.snt.carvalho@gmail.com>, 2017.
 #
 msgid ""
 msgstr ""
@@ -9,8 +10,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/jenslody/gnome-shell-extension-"
 "panel-osd/issues\n"
 "POT-Creation-Date: 2016-07-22 02:19+0200\n"
-"PO-Revision-Date: 2016-07-22 02:16+0200\n"
-"Last-Translator: Fábio Nogueira <fnogueira@gnome.org>\n"
+"PO-Revision-Date: 2017-06-13 13:35-0300\n"
+"Last-Translator: David Carvalho <david.snt.carvalho@gmail.com>\n"
 "Language-Team: Português do Brasil\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -29,32 +30,34 @@ msgstr ""
 
 #: data/org.gnome.shell.extensions.panel-osd.gschema.xml:5
 msgid "Horizontal position of notification."
-msgstr ""
+msgstr "Posição horizontal da notificação."
 
 #: data/org.gnome.shell.extensions.panel-osd.gschema.xml:9
 msgid "Vertical position of notification."
-msgstr ""
+msgstr "Posição vertical da notificação."
 
 #: data/org.gnome.shell.extensions.panel-osd.gschema.xml:13
 msgid "Allow resetting horizontal position of notification."
-msgstr ""
+msgstr "Permitir redefinição da posição horizontal da notificação."
 
 #: data/org.gnome.shell.extensions.panel-osd.gschema.xml:17
 msgid "Allow resetting vertical position of notification."
-msgstr ""
+msgstr "Permitir redefinição da posição vertical da notificação."
 
 #: data/org.gnome.shell.extensions.panel-osd.gschema.xml:21
 msgid "Always expand notifications."
-msgstr ""
+msgstr "Sempre expandir as notificações."
 
 #: data/org.gnome.shell.extensions.panel-osd.gschema.xml:25
 msgid "Delay before test notification is shown."
-msgstr "Atraso antes da notificação teste ser mostrada."
+msgstr "Atraso antes da notificação de teste ser mostrada."
 
 #: data/org.gnome.shell.extensions.panel-osd.gschema.xml:29
 msgid ""
 "If the value is true a test-notification is send and then set back to false."
 msgstr ""
+"Se o valor for \"true\" a notificação de teste é enviada e então será "
+"definida de volta para \"false\"."
 
 #: data/panel-osd-settings.ui:39
 msgid "Horizontal position [%] from 0% (left) to 100% (right)"
@@ -85,7 +88,7 @@ msgid ""
 "Delay [s] before test-notification is shown. If it is too short, the "
 "notification might close immediately after it is shown."
 msgstr ""
-"Atraso [s] antes da notificação teste ser mostrada. Se muito curto, a "
+"Atraso [s] antes da notificação de teste ser mostrada. Se muito curto, a "
 "notificação pode fechar imediatamente depois de ser exibida."
 
 #: data/panel-osd-settings.ui:328
