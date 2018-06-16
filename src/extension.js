@@ -179,7 +179,7 @@ let setTestNotification = function(v) {
 };
 
 let updateAvailablePrimaryRect = function() {
-    let monitor=Main.layoutManager.monitors[0];
+    let monitor=Main.layoutManager.primaryMonitor;
     _availablePrimaryRect.x=monitor.x;
     _availablePrimaryRect.y=monitor.y;
     _availablePrimaryRect.width=monitor.width;
