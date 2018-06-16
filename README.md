@@ -1,4 +1,4 @@
-![Screenshot](https://github.com/jenslody/gnome-shell-extension-panel-osd/raw/master/data/Screenshot.jpg)
+![Screenshot](https://gitlab.com/jenslody/gnome-shell-extension-panel-osd/raw/master/data/Screenshot.jpg)
 
 *gnome-shell-extension-panel-osd* is an extension to place shell notifications under the panel instead of above the message-tray.
 
@@ -34,7 +34,7 @@ Make sure you have the following dependencies installed:
 
 Run the following commands:
 
-	cd ~ && git clone git://github.com/jenslody/gnome-shell-extension-panel-osd.git
+	cd ~ && git clone git://gitlab.com/jenslody/gnome-shell-extension-panel-osd.git
 	cd ~/gnome-shell-extension-panel-osd
 	./autogen.sh && make local-install
 

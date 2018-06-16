@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-shell-extension-panel-osd 1.1\n"
-"Report-Msgid-Bugs-To: https://github.com/jenslody/gnome-shell-extension-"
+"Report-Msgid-Bugs-To: https://gitlab.com/jenslody/gnome-shell-extension-"
 "panel-osd/issues\n"
 "POT-Creation-Date: 2017-07-30 15:14+0300\n"
 "PO-Revision-Date: 2017-07-30 15:28+0300\n"
