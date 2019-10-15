@@ -47,6 +47,8 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Convenience = Me.imports.convenience;
 const St = imports.gi.St;
 const Meta = imports.gi.Meta;
+const Clutter = imports.gi.Clutter;
+
 
 const Gettext = imports.gettext.domain('gnome-shell-extension-panel-osd');
 const _ = Gettext.gettext;
@@ -238,7 +240,9 @@ let extensionShowNotification = function() {
 
         this._bannerBin.add_actor(this._banner.actor);
 
-        this._bannerBin._opacity = 0;
+        if (!versionAtLeast('3.34', Config.PACKAGE_VERSION)) {
+            this._bannerBin._opacity = 0;
+        }
         this._bannerBin.opacity = 0;
 
         if (getY_position() < 50)
@@ -269,6 +273,9 @@ let extensionShowNotification = function() {
         this._notificationWidget.show();
     }
 
+    if (versionAtLeast('3.30', Config.PACKAGE_VERSION)) {
+        Meta.disable_unredirect_for_display(global.display);
+    }
     this._updateShowingNotification();
 
     let [x, y, mods] = global.get_pointer();
@@ -351,51 +358,85 @@ let extensionHideNotification = function(animate) {
         }
     }
 
-    // JRL changes begin
-    let theNotification;
-    if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
-        theNotification = this._bannerBin;
-    }else
-    {
-        theNotification = this._notificationWidget;
-    }
-   // JRL changes end
+    if (versionAtLeast('3.34', Config.PACKAGE_VERSION)) {
+        this._bannerBin.remove_all_transitions();
 
-
-    if (animate) {
-        if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
-            // JRL changes begin
-            this._tween(theNotification, '_notificationState', State.HIDDEN,
-                        { y: yPos,
-                        // JRL changes end
-                          _opacity: 0,
-                          time: ANIMATION_TIME,
-                          transition: 'easeOutBack',
-                          onUpdate: this._clampOpacity,
-                          onUpdateScope: this,
-                          onComplete: this._hideNotificationCompleted,
-                          onCompleteScope: this
-                        });
+        if (animate) {
+            this._notificationState = State.HIDING;
+            this._bannerBin.ease({
+                opacity: 0,
+                duration: ANIMATION_TIME,
+                mode: Clutter.AnimationMode.EASE_OUT_BACK
+            });
+            this._bannerBin.ease({
+                // JRL changes begin
+                y: yPos,
+                // JRL changes end
+                duration: ANIMATION_TIME,
+                mode: Clutter.AnimationMode.EASE_OUT_BACK,
+                onComplete: () => {
+                    this._notificationState = State.HIDDEN;
+                    this._hideNotificationCompleted();
+                    this._updateState();
+                }
+            });
         } else {
             // JRL changes begin
-            this._tween(theNotification, '_notificationState', State.HIDDEN,
-                        { y: yPos,
-                        // JRL changes end
-                          opacity: 0,
-                          time: ANIMATION_TIME,
-                          transition: 'easeOutQuad',
-                          onComplete: this._hideNotificationCompleted,
-                          onCompleteScope: this
-                        });
+            y: yPos,
+            // JRL changes end
+            this._bannerBin.opacity = 0;
+            this._notificationState = State.HIDDEN;
+            this._hideNotificationCompleted();
         }
-    } else {
+    }
+    else
+    {
         // JRL changes begin
-        Tweener.removeTweens(theNotification);
-        theNotification.y = yPos;
-        theNotification.opacity = 0;
-        // JRL changes end
-        this._notificationState = State.HIDDEN;
-        this._hideNotificationCompleted();
+        let theNotification;
+        if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
+            theNotification = this._bannerBin;
+        }else
+        {
+            theNotification = this._notificationWidget;
+        }
+       // JRL changes end
+
+
+        if (animate) {
+            if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
+                // JRL changes begin
+                this._tween(theNotification, '_notificationState', State.HIDDEN,
+                            { y: yPos,
+                            // JRL changes end
+                              _opacity: 0,
+                              time: ANIMATION_TIME,
+                              transition: 'easeOutBack',
+                              onUpdate: this._clampOpacity,
+                              onUpdateScope: this,
+                              onComplete: this._hideNotificationCompleted,
+                              onCompleteScope: this
+                            });
+            } else {
+                // JRL changes begin
+                this._tween(theNotification, '_notificationState', State.HIDDEN,
+                            { y: yPos,
+                            // JRL changes end
+                              opacity: 0,
+                              time: ANIMATION_TIME,
+                              transition: 'easeOutQuad',
+                              onComplete: this._hideNotificationCompleted,
+                              onCompleteScope: this
+                            });
+            }
+        } else {
+            // JRL changes begin
+            Tweener.removeTweens(theNotification);
+            theNotification.y = yPos;
+            theNotification.opacity = 0;
+            // JRL changes end
+            this._notificationState = State.HIDDEN;
+            this._hideNotificationCompleted();
+        }
     }
 };
 
@@ -494,33 +535,57 @@ let extensionUpdateShowingNotification = function() {
     // We use this._showNotificationCompleted() onComplete callback to extend the time the updated
     // notification is being shown.
 
-    let tweenParams;
-    if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
-        tweenParams = { _opacity: 255,
-                            // JRL changes begin
-                            y: yPos,
-                            // JRL changes end
-                            time: ANIMATION_TIME,
-                            transition: 'easeOutBack',
-                            onUpdate: this._clampOpacity,
-                            onUpdateScope: this,
-                            onComplete: this._showNotificationCompleted,
-                            onCompleteScope: this
-                          };
-    }else
-    {
-        tweenParams = { opacity: 255,
-                            // JRL changes begin
-                            y: yPos,
-                            // JRL changes end
-                            time: ANIMATION_TIME,
-                            transition: 'easeOutQuad',
-                            onComplete: this._showNotificationCompleted,
-                            onCompleteScope: this
-                          };
+    if (versionAtLeast('3.34', Config.PACKAGE_VERSION)) {
+        this._notificationState = State.SHOWING;
+        this._bannerBin.remove_all_transitions();
+        this._bannerBin.ease({
+            opacity: 255,
+            duration: ANIMATION_TIME,
+            mode: Clutter.AnimationMode.LINEAR
+        });
+        this._bannerBin.ease({
+            // JRL changes begin
+            y: yPos,
+            // JRL changes end
+            duration: ANIMATION_TIME,
+            mode: Clutter.AnimationMode.EASE_OUT_BACK,
+            onComplete: () => {
+                this._notificationState = State.SHOWN;
+                this._showNotificationCompleted();
+                this._updateState();
+            }
+        });
     }
+    else
+    {
+        let tweenParams;
+        if (versionAtLeast('3.16', Config.PACKAGE_VERSION)) {
+            tweenParams = { _opacity: 255,
+                                // JRL changes begin
+                                y: yPos,
+                                // JRL changes end
+                                time: ANIMATION_TIME,
+                                transition: 'easeOutBack',
+                                onUpdate: this._clampOpacity,
+                                onUpdateScope: this,
+                                onComplete: this._showNotificationCompleted,
+                                onCompleteScope: this
+                              };
+        }else
+        {
+            tweenParams = { opacity: 255,
+                                // JRL changes begin
+                                y: yPos,
+                                // JRL changes end
+                                time: ANIMATION_TIME,
+                                transition: 'easeOutQuad',
+                                onComplete: this._showNotificationCompleted,
+                                onCompleteScope: this
+                              };
+        }
 
-    this._tween(theNotification, '_notificationState', State.SHOWN, tweenParams);
+        this._tween(theNotification, '_notificationState', State.SHOWN, tweenParams);
+    }
 };
 
 /*
