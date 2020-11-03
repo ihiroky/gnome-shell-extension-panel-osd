@@ -1,0 +1,93 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Jens Lody
+# This file is distributed under the same license as the gnome-shell-extension-panel-osd package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-shell-extension-panel-osd 1.1\n"
+"Report-Msgid-Bugs-To: https://gitlab.com/jenslody/gnome-shell-extension-"
+"panel-osd/issues\n"
+"POT-Creation-Date: 2016-07-22 02:19+0200\n"
+"PO-Revision-Date: 2020-09-25 13:55+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.4.1\n"
+"Last-Translator: Heimen Stoffels <vistausss@outlook.com>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: nl\n"
+
+#: src/extension.js:119
+msgid ""
+"This is just a multiline test-message to show where the notification will be "
+"placed and to test expansion (showing details)."
+msgstr ""
+"Dit is een melding met meerdere regels die alleen bedoeld is om aan te tonen "
+"waar de melding wordt geplaatst en hoe deze eruitziet."
+
+#: data/org.gnome.shell.extensions.panel-osd.gschema.xml:5
+msgid "Horizontal position of notification."
+msgstr "De horizontale positie van meldingen."
+
+#: data/org.gnome.shell.extensions.panel-osd.gschema.xml:9
+msgid "Vertical position of notification."
+msgstr "De verticale positie van meldingen."
+
+#: data/org.gnome.shell.extensions.panel-osd.gschema.xml:13
+msgid "Allow resetting horizontal position of notification."
+msgstr "Toestaan de horizontale positie van meldingen te herstellen."
+
+#: data/org.gnome.shell.extensions.panel-osd.gschema.xml:17
+msgid "Allow resetting vertical position of notification."
+msgstr "Toestaan de verticale positie van meldingen te herstellen."
+
+#: data/org.gnome.shell.extensions.panel-osd.gschema.xml:21
+msgid "Always expand notifications."
+msgstr "Klap meldingen altijd uit."
+
+#: data/org.gnome.shell.extensions.panel-osd.gschema.xml:25
+msgid "Delay before test notification is shown."
+msgstr "De vertraging voordat meldingen worden getoond."
+
+#: data/org.gnome.shell.extensions.panel-osd.gschema.xml:29
+msgid ""
+"If the value is true a test-notification is send and then set back to false."
+msgstr "Schakel in om een testmelding te versturen."
+
+#: data/panel-osd-settings.ui:39
+msgid "Horizontal position [%] from 0% (left) to 100% (right)"
+msgstr "Horizontale positie [%] van 0% (links) tot 100% (rechts)"
+
+#: data/panel-osd-settings.ui:86
+msgid "Vertical position [%] from 0% (bottom) to 100% (top)"
+msgstr "Verticale positie [%] van 0% (onderaan) tot 100% (bovenaan)"
+
+#: data/panel-osd-settings.ui:170
+msgid "Reset horizontal position to defaults"
+msgstr "Horizontale positie herstellen"
+
+#: data/panel-osd-settings.ui:183
+msgid "Reset vertical position to defaults"
+msgstr "Verticale positie herstellen"
+
+#: data/panel-osd-settings.ui:199
+msgid "Reset"
+msgstr "Standaardwaarden"
+
+#: data/panel-osd-settings.ui:257
+msgid "Force showing details for all notifications"
+msgstr "Alle meldingen uitklappen"
+
+#: data/panel-osd-settings.ui:299
+msgid ""
+"Delay [s] before test-notification is shown. If it is too short, the "
+"notification might close immediately after it is shown."
+msgstr ""
+"De vertraging (in seconden) voordat meldingen worden getoond. Als de "
+"vertraging te kort is, kunnen meldingen direct na tonen verdwijnen."
+
+#: data/panel-osd-settings.ui:328
+msgid "Show test notification"
+msgstr "Testmelding tonen"
