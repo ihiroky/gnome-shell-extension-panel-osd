@@ -1,11 +1,4 @@
-#### I have to abandon this project.
-#### Unfortunately I do not have the power to work on it any longer.
-#### If anybody is willing to take it over, feel free to fork it.
-
-![Screenshot](https://gitlab.com/jenslody/gnome-shell-extension-panel-osd/raw/master/data/Screenshot.jpg)
-
-*gnome-shell-extension-panel-osd* is an extension to place shell notifications under the panel instead of above the message-tray.
-
+This repository is forked from https://gitlab.com/jenslody/gnome-shell-extension-panel-osd
 ----
 
 # Installation
